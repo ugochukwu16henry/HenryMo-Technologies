@@ -1,0 +1,160 @@
+complete API architecture specification file tailored specifically for HenryMo Technologies.
+
+This file consolidates your:
+
+Business goals
+Tech stack preferences
+Security requirements
+Admin dashboard features
+Social media automation system
+Future SaaS expansion
+API endpoints & modules
+You can save this as henrymo_api_architecture_spec.md or .txt in your project root.
+
+📄 HenryMo Technologies — Full API Architecture Specification
+Version: 1.0
+Last Updated: December 11, 2025
+Author: Henry Ugochukwu Kolawole
+Company: HenryMo Technologies
+Slogan: “Where Ideas Become Powerful Digital Solutions.”
+
+🔧 1. API Overview
+Type: RESTful API (with future Webhook & WebSocket support)
+Protocol: HTTPS only
+Authentication: JWT + Refresh Tokens + Role-Based Access Control (RBAC)
+Authorization Levels:
+guest – public access (portfolio, services)
+client – project tracking, support tickets
+admin – full CMS, social scheduler, analytics, team mgmt
+superadmin – system config, billing, API key mgmt
+Rate Limiting: Yes (100 req/min per IP)
+CORS: Restricted to henrymo.tech and admin.henrymo.tech
+Error Format:
+json
+1
+{ "error": "Invalid token", "code": "AUTH_001" }
+
+🏗️ 2. Core API Modules
+2.1 Auth Module (/api/auth)
+POST /login – email + password → returns { accessToken, refreshToken }
+POST /register – client signup (for client portal)
+POST /refresh – exchange refreshToken for new accessToken
+POST /logout – invalidate token (clears from DB if using token blacklist)
+POST /password-reset/request
+POST /password-reset/confirm
+🔐 Uses Bcrypt, HTTP-only cookies (production), and secure JWT with HS256 or RS256.
+
+2.2 User & Team Management (/api/users)
+GET /me – current user profile
+PUT /me – update profile
+GET /team – (admin only) list staff
+POST /team – invite team member (assign role: admin, support, dev)
+DELETE /team/:id
+🔒 RBAC enforced. Clients cannot access team routes.
+
+2.3 CMS Module (/api/cms)
+GET /pages – public pages (Home, About, Services)
+GET /pages/:slug
+POST /pages – (admin) create page
+PUT /pages/:id
+DELETE /pages/:id
+GET /blog
+POST /blog – publish article
+PUT /blog/:id
+DELETE /blog/:id
+💡 Supports Markdown + rich text (stored as HTML + sanitized).
+
+2.4 Portfolio & Projects (/api/portfolio)
+GET /items – public portfolio
+POST /items – (admin) add project
+PUT /items/:id
+DELETE /items/:id
+Fields: title, description, image, techStack, liveUrl, githubUrl
+2.5 Testimonials (/api/testimonials)
+GET / – public
+POST / – (admin) add client testimonial
+PUT /:id
+DELETE /:id
+2.6 Contact & Inquiries (/api/inquiries)
+POST / – submit contact form → stored in DB + email notification
+GET / – (admin) list all inquiries
+PUT /:id/status – mark as read, in-progress, resolved
+✉️ Auto-email via SendGrid or Resend.
+
+2.7 Social Media Automation (/api/social)
+GET /accounts – connected platforms (FB, IG, LI, X, etc.)
+POST /connect/:platform – OAuth flow
+POST /schedule – { platform, content, mediaUrl, scheduledAt }
+GET /schedule – list all (filter by status: scheduled, posted, failed)
+DELETE /schedule/:id
+GET /analytics – engagement, reach, top posts (mock or via Meta/LinkedIn APIs)
+🤖 Future: AI content suggestions via /api/ai/suggest-caption
+
+2.8 Analytics Dashboard (/api/analytics)
+GET /traffic – page views, bounce rate (via Vercel Analytics or self-hosted)
+GET /leads – form submissions + conversion
+GET /social/summary – cross-platform performance
+2.9 Client Portal (/api/client)
+GET /projects – client’s active projects
+GET /projects/:id
+POST /projects/:id/messages – support chat
+GET /billing – invoices, payment status
+🔑 Requires client role JWT.
+
+2.10 SaaS & Billing (/api/billing) (Future Phase)
+POST /subscribe – Stripe integration
+GET /plans – list SaaS tiers (Starter, Pro, Enterprise)
+Webhooks for payment events
+2.11 AI & Automation (/api/ai) (Future)
+POST /generate/content – blog draft, social caption
+POST /analyze/hashtag – performance prediction
+2.12 Digital Academy & Marketplace (/api/academy, /api/marketplace) (Future)
+Courses, lessons, progress tracking
+Template store: React components, API scripts, Figma UI kits
+🛡️ 3. Security Layers
+✅ HTTPS enforced (HSTS)
+✅ Input validation (Zod or Joi)
+✅ SQL/NoSQL injection protection (via Prisma/Mongoose)
+✅ JWT signed with strong secret (JWT_SECRET from env)
+✅ Rate limiting (express-rate-limit or Vercel Edge Config)
+✅ File uploads scanned (if using Cloudflare R2/AWS S3)
+✅ Admin routes require role === 'admin'
+🗄️ 4. Tech Stack
+Layer
+Technology
+Backend
+Node.js + Express (or Next.js API Routes for Vercel)
+Database
+PostgreSQL (primary), MongoDB Atlas (optional for logs/docs)
+ORM
+Prisma (recommended)
+Auth
+JWT + Bcrypt + OAuth 2.0 (for social connect)
+Storage
+Cloudflare R2 or AWS S3
+Caching
+Redis (for sessions/analytics)
+Hosting
+Vercel (frontend + serverless API) + Render/Docker (if separate API)
+Monitoring
+Sentry, LogRocket, or custom logs
+🌐 5. Future-Proofing & Scalability
+Modular design: each module = separate route handler
+OpenAPI/Swagger docs (/api/docs) via Swagger UI
+API versioning (/api/v1/...)
+Webhook support for third-party integrations
+Docker-ready for microservices split (Phase 2)
+🎨 6. Brand Integration
+All admin UI must use:
+Primary: #007BFF
+Secondary: #111827
+Accent: #22C55E (success), #FACC15 (warning)
+Font: Poppins (headings), Inter (body)
+✅ Next Steps
+Initialize project repo with this spec
+Set up Prisma + PostgreSQL
+Implement Auth module first (login, JWT, roles)
+Build CMS & Portfolio APIs
+Develop Admin Dashboard (React + SWR/Axios)
+Add Social Scheduler with OAuth
+Deploy to Vercel + Render

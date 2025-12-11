@@ -1,0 +1,92 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String   // bcrypt hash
+  name      String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  scheduledPosts ScheduledPost[]
+  socialAccounts SocialAccount[]
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  CLIENT
+  ADMIN
+  SUPERADMIN
+}
+
+model Page {
+  id      Int    @id @default(autoincrement())
+  title   String
+  slug    String @unique
+  content String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("pages")
+}
+
+model PortfolioItem {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  image       String?  // URL
+  techStack   String[] // e.g. ["React", "Node.js"]
+  liveUrl     String?
+  githubUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("portfolio_items")
+}
+
+model ScheduledPost {
+  id          Int      @id @default(autoincrement())
+  platform    String   // "facebook", "instagram", "linkedin", "twitter", "tiktok", "youtube"
+  content     String
+  mediaUrl    String?
+  scheduledAt DateTime
+  status      PostStatus @default(SCHEDULED)
+  userId      Int
+  user        User       @relation(fields: [userId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("scheduled_posts")
+}
+
+enum PostStatus {
+  DRAFT
+  SCHEDULED
+  POSTED
+  FAILED
+}
+
+model SocialAccount {
+  id         Int      @id @default(autoincrement())
+  platform   String   // 'linkedin', 'facebook', etc.
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  accessToken String
+  expiresAt  DateTime
+  metadata   String?  // JSON string of profile/org info
+  createdAt  DateTime @default(now())
+
+  @@unique([platform, userId])
+}

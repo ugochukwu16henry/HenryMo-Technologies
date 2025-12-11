@@ -1,0 +1,196 @@
+# openapi.yaml
+
+openapi: 3.0.3
+
+info:
+
+  title: HenryMo Technologies API
+
+  version: 1.0.0
+
+  description: REST API for HenryMo Technologies platform — CMS, social scheduler, auth, and more.
+
+servers:
+
+  - url: https://henrymo.vercel.app/api
+
+    description: Production (Vercel)
+
+  - url: http://localhost:3000/api
+
+    description: Local development
+
+
+
+paths:
+
+  /auth/login:
+
+    post:
+
+      summary: Authenticate user
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              properties:
+
+                email:
+
+                  type: string
+
+                  example: admin@henrymo.tech
+
+                password:
+
+                  type: string
+
+                  example: secure123
+
+      responses:
+
+        '200':
+
+          description: Login success
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: object
+
+                properties:
+
+                  token:
+
+                    type: string
+
+                  user:
+
+                    type: object
+
+        '401':
+
+          description: Invalid credentials
+
+
+
+  /cms/pages:
+
+    get:
+
+      summary: Get all CMS pages (public)
+
+      security: []
+
+      responses:
+
+        '200':
+
+          description: List of pages
+
+    post:
+
+      summary: Create new page (admin only)
+
+      security:
+
+        - bearerAuth: []
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              properties:
+
+                title: { type: string }
+
+                slug: { type: string }
+
+                content: { type: string }
+
+      responses:
+
+        '201': { description: Created }
+
+
+
+  /social/schedule:
+
+    get:
+
+      summary: Get user's scheduled posts
+
+      security:
+
+        - bearerAuth: []
+
+      responses:
+
+        '200': { description: List of scheduled posts }
+
+    post:
+
+      summary: Schedule a new post
+
+      security:
+
+        - bearerAuth: []
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              properties:
+
+                platform: { type: string, enum: [facebook, instagram, linkedin, twitter, tiktok, youtube] }
+
+                content: { type: string }
+
+                scheduledAt: { type: string, format: date-time }
+
+      responses:
+
+        '201': { description: Scheduled }
+
+
+
+components:
+
+  securitySchemes:
+
+    bearerAuth:
+
+      type: http
+
+      scheme: bearer
+
+      bearerFormat: JWT
+
