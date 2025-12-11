@@ -1,5 +1,7 @@
 // components/ui/Button.js
 
+import Link from 'next/link';
+
 export default function Button({ 
   children, 
   variant = 'primary', 
@@ -24,6 +26,36 @@ export default function Button({
   };
 
   const disabledStyles = disabled ? "opacity-50 cursor-not-allowed" : "";
+
+  // Support 'as' prop or href for rendering as Link/anchor tag
+  if (props.as === 'a' || props.href) {
+    const { as, href, ...linkProps } = props;
+    const linkHref = href || linkProps.href;
+    
+    if (linkHref && linkHref.startsWith('/')) {
+      // Use Next.js Link for internal routes
+      return (
+        <Link
+          href={linkHref}
+          className={`${base} ${variants[variant]} ${sizes[size]} ${disabledStyles} ${className} inline-block`}
+          {...linkProps}
+        >
+          {children}
+        </Link>
+      );
+    } else {
+      // Use anchor tag for external links
+      return (
+        <a
+          href={linkHref}
+          className={`${base} ${variants[variant]} ${sizes[size]} ${disabledStyles} ${className} inline-block`}
+          {...linkProps}
+        >
+          {children}
+        </a>
+      );
+    }
+  }
 
   return (
     <button

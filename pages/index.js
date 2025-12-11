@@ -1,148 +1,89 @@
 // pages/index.js
 
 import Head from 'next/head';
-import Link from 'next/link';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Section from '../components/ui/Section';
-import Button from '../components/ui/Button';
 import ServiceCard from '../components/ServiceCard';
-import TestimonialSlider from '../components/TestimonialSlider';
+import Button from '../components/ui/Button';
+
+const services = [
+  { title: "Website Development", description: "Modern, responsive websites with CMS & SEO." },
+  { title: "Mobile App Development", description: "iOS, Android & cross-platform apps." },
+  { title: "Custom Software Engineering", description: "Tailored enterprise solutions." },
+  { title: "Database Design & Management", description: "Secure, scalable data architecture." },
+  { title: "Cloud Deployment", description: "Hosting, CI/CD, and DevOps." },
+  { title: "Digital Automation", description: "Social media, workflows, and AI tools." },
+];
 
 export default function Home() {
-  const featuredServices = [
-    {
-      title: 'Web Development',
-      description: 'Custom web applications built with modern technologies.',
-      icon: (
-        <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-        </svg>
-      ),
-      features: ['React & Next.js', 'Responsive Design', 'Performance Optimization'],
-    },
-    {
-      title: 'API Development',
-      description: 'Robust RESTful APIs and backend services.',
-      icon: (
-        <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-      ),
-      features: ['RESTful APIs', 'Database Integration', 'Authentication'],
-    },
-    {
-      title: 'Digital Solutions',
-      description: 'Comprehensive digital transformation services.',
-      icon: (
-        <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      features: ['Cloud Solutions', 'Mobile Apps', 'Social Media Automation'],
-    },
-  ];
-
   return (
     <>
       <Head>
-        <title>HenryMo Technologies - Where Ideas Become Powerful Digital Solutions</title>
-        <meta name="description" content="Transform your ideas into powerful digital solutions with HenryMo Technologies. Web development, API development, and comprehensive digital services." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>HenryMo Technologies — Where Ideas Become Powerful Digital Solutions</title>
+        <meta name="description" content="We build powerful digital experiences for the modern world." />
       </Head>
 
       <Header />
 
       <main>
-        {/* Hero Section */}
-        <Section background="indigo" padding="xl">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              Where Ideas Become
-              <br />
-              <span className="text-indigo-200">Powerful Digital Solutions</span>
+        {/* Hero */}
+        <section className="bg-gradient-to-r from-[#007BFF] to-[#22C55E] text-white py-20">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              We Build Powerful Digital Experiences for the Modern World.
             </h1>
-            <p className="text-xl text-indigo-100 max-w-3xl mx-auto mb-8">
-              We transform innovative ideas into cutting-edge digital solutions that drive 
-              business growth and create exceptional user experiences.
+            <p className="text-xl mb-8 max-w-2xl mx-auto">
+              Transform your vision into scalable, secure, and stunning digital products.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/contact">
-                <Button size="lg" variant="secondary">
-                  Get Started
-                </Button>
-              </Link>
-              <Link href="/services">
-                <Button size="lg" variant="outline" className="bg-white text-indigo-600 hover:bg-indigo-50">
-                  Our Services
-                </Button>
-              </Link>
+            <div className="space-x-4">
+              <Button variant="gold" size="lg" href="/contact">Hire Us</Button>
+              <Button variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-[#007BFF]" href="/services">View Services</Button>
             </div>
           </div>
-        </Section>
+        </section>
 
-        {/* Services Preview */}
-        <Section padding="xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Our Services
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Comprehensive digital solutions tailored to your business needs
-            </p>
+        {/* Services */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-12">Our Services</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {services.map((service, i) => (
+                <ServiceCard key={i} title={service.title} description={service.description} />
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredServices.map((service, index) => (
-              <ServiceCard
-                key={index}
-                title={service.title}
-                description={service.description}
-                icon={service.icon}
-                features={service.features}
-              />
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <Link href="/services">
-              <Button variant="outline">
-                View All Services
-              </Button>
-            </Link>
-          </div>
-        </Section>
+        </section>
 
-        {/* Testimonials */}
-        <Section background="gray" padding="xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              What Our Clients Say
-            </h2>
-            <p className="text-lg text-gray-600">
-              Trusted by businesses worldwide
+        {/* Why Choose Us */}
+        <section className="py-16">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold mb-4">Why Choose HenryMo Technologies?</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+              Full-stack expertise, affordable premium quality, and personalized support for global clients.
             </p>
+            <div className="flex flex-wrap justify-center gap-6">
+              <div className="bg-white p-4 rounded-lg shadow">
+                <div className="text-[#007BFF] font-bold text-2xl">20+</div>
+                <div>Global Clients</div>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow">
+                <div className="text-[#22C55E] font-bold text-2xl">100%</div>
+                <div>Custom Solutions</div>
+              </div>
+              <div className="bg-white p-4 rounded-lg shadow">
+                <div className="text-[#FACC15] font-bold text-2xl">24/7</div>
+                <div>Support</div>
+              </div>
+            </div>
           </div>
-          <div className="max-w-4xl mx-auto">
-            <TestimonialSlider />
-          </div>
-        </Section>
+        </section>
 
-        {/* CTA Section */}
-        <Section padding="lg">
-          <div className="text-center bg-indigo-600 rounded-lg p-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Ready to Transform Your Business?
-            </h2>
-            <p className="text-xl text-indigo-100 mb-8 max-w-2xl mx-auto">
-              Let's discuss how we can help bring your ideas to life and create 
-              powerful digital solutions for your business.
-            </p>
-            <Link href="/contact">
-              <Button size="lg" variant="secondary">
-                Contact Us Today
-              </Button>
-            </Link>
-          </div>
-        </Section>
+        {/* CTA */}
+        <section className="py-16 bg-[#111827] text-white text-center">
+          <h2 className="text-3xl font-bold mb-4">Ready to build something amazing?</h2>
+          <p className="mb-6">Let's bring your project to life.</p>
+          <Button variant="gold" size="lg" as="a" href="/contact">Get Started</Button>
+        </section>
       </main>
 
       <Footer />

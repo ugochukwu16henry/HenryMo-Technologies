@@ -22,9 +22,9 @@ export default function Header() {
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
               <img
-                src="/images/logo.svg"
+                src="/images/Henrymo logo.png"
                 alt="HenryMo Technologies"
-                className="h-8 w-auto"
+                className="h-10 w-auto"
                 onError={(e) => {
                   e.target.style.display = 'none';
                   e.target.nextSibling.style.display = 'block';
