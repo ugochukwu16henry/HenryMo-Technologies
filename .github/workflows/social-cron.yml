@@ -1,0 +1,30 @@
+# .github/workflows/social-cron.yml
+
+name: Auto-Post Social Scheduler
+
+on:
+
+  schedule:
+
+    - cron: '*/10 * * * *'  # every 10 minutes
+
+  workflow_dispatch:  # manual trigger
+
+
+
+jobs:
+
+  autopost:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Trigger Autopost
+
+        run: |
+
+          curl -X POST https://henrymo.vercel.app/api/social/autopost \
+
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
+
