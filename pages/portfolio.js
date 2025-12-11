@@ -1,111 +1,135 @@
 // pages/portfolio.js
 
-import Head from 'next/head';
 import { useState, useEffect } from 'react';
+
+import Head from 'next/head';
+
 import Header from '../components/Header';
+
 import Footer from '../components/Footer';
-import Section from '../components/ui/Section';
-import ProjectCard from '../components/ProjectCard';
+
+import Button from '../components/ui/Button';
+
+
 
 export default function Portfolio() {
+
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+
 
   useEffect(() => {
-    // Fetch projects from API
-    fetch('/api/portfolio')
-      .then((res) => res.json())
-      .then((data) => {
-        setProjects(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        // Fallback to default projects if API fails
-        setProjects([
-          {
-            id: 1,
-            title: 'E-Commerce Platform',
-            description: 'A full-featured e-commerce platform built with React and Node.js',
-            image: 'https://via.placeholder.com/800x600',
-            techStack: ['React', 'Node.js', 'PostgreSQL', 'TypeScript'],
-            liveUrl: 'https://example.com',
-            githubUrl: 'https://github.com/example',
-          },
-          {
-            id: 2,
-            title: 'Social Media Dashboard',
-            description: 'Comprehensive dashboard for managing multiple social media accounts',
-            image: 'https://via.placeholder.com/800x600',
-            techStack: ['Next.js', 'Prisma', 'PostgreSQL', 'Tailwind CSS'],
-            liveUrl: 'https://example.com',
-            githubUrl: 'https://github.com/example',
-          },
-          {
-            id: 3,
-            title: 'Mobile Banking App',
-            description: 'Secure mobile banking application with real-time transactions',
-            image: 'https://via.placeholder.com/800x600',
-            techStack: ['React Native', 'Node.js', 'MongoDB', 'AWS'],
-            liveUrl: 'https://example.com',
-            githubUrl: 'https://github.com/example',
-          },
-        ]);
-        setLoading(false);
-      });
+
+    fetch('/api/portfolio/items')
+
+      .then(res => res.json())
+
+      .then(data => setProjects(data))
+
+      .catch(err => console.error("Failed to load portfolio", err));
+
   }, []);
 
+
+
   return (
+
     <>
+
       <Head>
-        <title>Portfolio - HenryMo Technologies</title>
-        <meta name="description" content="Explore our portfolio of successful projects and digital solutions." />
+
+        <title>Portfolio — HenryMo Technologies</title>
+
+        <meta name="description" content="View our latest digital projects and case studies." />
+
       </Head>
+
+
 
       <Header />
 
-      <main>
-        {/* Hero Section */}
-        <Section background="indigo" padding="xl">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Our Portfolio
-            </h1>
-            <p className="text-xl text-indigo-100 max-w-2xl mx-auto">
-              Showcasing our successful projects and digital solutions
-            </p>
-          </div>
-        </Section>
 
-        {/* Projects Grid */}
-        <Section padding="xl">
-          {loading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600">Loading projects...</p>
-            </div>
-          ) : projects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  title={project.title}
-                  description={project.description}
-                  image={project.image}
-                  techStack={project.techStack}
-                  liveUrl={project.liveUrl}
-                  githubUrl={project.githubUrl}
-                />
-              ))}
-            </div>
+
+      <main className="container mx-auto px-4 py-16">
+
+        <h1 className="text-4xl font-bold mb-4">Our Work</h1>
+
+        <p className="text-xl mb-12">High-impact digital solutions for global clients.</p>
+
+
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+          {projects.length > 0 ? (
+
+            projects.map(project => (
+
+              <div key={project.id} className="border rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow">
+
+                {project.image && (
+
+                  <img src={project.image} alt={project.title} className="w-full h-48 object-cover" />
+
+                )}
+
+                <div className="p-5">
+
+                  <h3 className="text-xl font-bold mb-2">{project.title}</h3>
+
+                  <p className="text-gray-600 mb-3">{project.description}</p>
+
+                  <div className="flex flex-wrap gap-2 mb-4">
+
+                    {project.techStack?.map((tech, i) => (
+
+                      <span key={i} className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+
+                        {tech}
+
+                      </span>
+
+                    ))}
+
+                  </div>
+
+                  <div className="flex space-x-3">
+
+                    {project.liveUrl && (
+
+                      <Button size="sm" as="a" href={project.liveUrl} target="_blank">Live Demo</Button>
+
+                    )}
+
+                    {project.githubUrl && (
+
+                      <Button size="sm" variant="outline" as="a" href={project.githubUrl} target="_blank">GitHub</Button>
+
+                    )}
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            ))
+
           ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600">No projects found.</p>
-            </div>
+
+            <p className="col-span-full text-center text-gray-500">No projects yet. Add some from your admin dashboard.</p>
+
           )}
-        </Section>
+
+        </div>
+
       </main>
 
-      <Footer />
-    </>
-  );
-}
 
+
+      <Footer />
+
+    </>
+
+  );
+
+}

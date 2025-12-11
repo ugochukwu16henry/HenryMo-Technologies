@@ -18,7 +18,7 @@ async function main() {
     create: {
       email: 'admin@henrymo.tech',
       password: superadminPassword,
-      name: 'Henry Kolawole',
+      name: 'Henry M. Ugochukwu',
       role: 'SUPERADMIN',
     },
   });

@@ -43,12 +43,13 @@ export default function About() {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             <div className="flex-shrink-0 relative">
               <img
-                src="/images/henry-profile.jpg"
-                alt="Henry Kolawole"
+                src="/images/henrypassportnew.jpg"
+                alt="Henry M. Ugochukwu"
                 className="w-48 h-48 rounded-full object-cover border-4 border-[#007BFF]"
                 onError={(e) => {
                   // Try alternative image paths
                   const alternatives = [
+                    '/images/henry-profile.jpg',
                     '/images/henry-profile.png',
                     '/images/henry.jpg',
                     '/images/henry.png',
@@ -70,11 +71,11 @@ export default function About() {
                 }}
               />
               <div className="w-48 h-48 rounded-full bg-gradient-to-br from-[#007BFF] to-[#22C55E] flex items-center justify-center text-white text-4xl font-bold" style={{ display: 'none' }}>
-                HK
+                HMU
               </div>
             </div>
             <div>
-              <h3 className="text-2xl font-bold mb-2">Henry Kolawole</h3>
+              <h3 className="text-2xl font-bold mb-2">Henry M. Ugochukwu</h3>
               <p className="text-[#007BFF] font-semibold mb-4">Founder & CEO</p>
               <p className="text-gray-700">
                 With years of experience in software development and digital transformation, 
