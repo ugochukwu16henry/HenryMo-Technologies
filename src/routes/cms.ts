@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { AuthRequest } from '../middleware/auth';
-import { authenticate, requireAdmin } from '../middleware/auth';
+import { requireAdmin } from '../middleware/auth';
 import { AppError, ErrorCodes } from '../utils/errors';
 import { validate } from '../utils/validation';
 import { z } from 'zod';

@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import { AuthRequest } from '../middleware/auth';
-import { authenticate, requireAdmin } from '../middleware/auth';
+import { AuthRequest, requireAdmin } from '../middleware/auth';
 import prisma from '../config/database';
 
 const router = Router();
 
 // GET /api/analytics/traffic
-router.get('/traffic', ...requireAdmin, async (req: AuthRequest, res, next) => {
+router.get('/traffic', ...requireAdmin, async (_req: AuthRequest, res, next) => {
   try {
     // Mock traffic data - in production, integrate with analytics service
     const traffic = {
@@ -28,7 +27,7 @@ router.get('/traffic', ...requireAdmin, async (req: AuthRequest, res, next) => {
 });
 
 // GET /api/analytics/social/summary
-router.get('/social/summary', ...requireAdmin, async (req: AuthRequest, res, next) => {
+router.get('/social/summary', ...requireAdmin, async (_req: AuthRequest, res, next) => {
   try {
     const totalSchedules = await prisma.scheduledPost.count();
     const postedSchedules = await prisma.scheduledPost.count({

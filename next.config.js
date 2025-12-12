@@ -3,6 +3,11 @@ const nextConfig = {
   reactStrictMode: true,
   // Optimize build performance
   swcMinify: true,
+  // Skip type checking - Express routes in src/ are separate and have their own tsconfig
+  typescript: {
+    ignoreBuildErrors: false,
+    tsconfigPath: './tsconfig.next.json',
+  },
   // Reduce compilation time
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
