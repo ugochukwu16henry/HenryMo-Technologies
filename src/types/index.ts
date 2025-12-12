@@ -15,7 +15,7 @@ export enum PostStatus {
 export interface JWTPayload {
   userId: number;
   email: string;
-  role: Role;
+  role: Role | string; // Allow both enum and string to match Prisma types
 }
 
 export interface AuthTokens {

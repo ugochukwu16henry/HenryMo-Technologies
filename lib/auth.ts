@@ -24,7 +24,7 @@ export function verifyToken(token: string): any {
   }
 }
 
-export function hashPassword(password: string): void {
+export function hashPassword(_password: string): void {
   // Use bcrypt (import bcrypt in API routes)
   // This is a placeholder; actual hashing happens in API
 }

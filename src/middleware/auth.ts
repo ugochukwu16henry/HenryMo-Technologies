@@ -13,7 +13,7 @@ export interface AuthRequest extends Request {
 
 export const authenticate = (
   req: AuthRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): void => {
   try {
@@ -26,7 +26,11 @@ export const authenticate = (
     const token = authHeader.substring(7);
     const payload = verifyAccessToken(token);
     
-    req.user = payload;
+    req.user = {
+      userId: payload.userId,
+      email: payload.email,
+      role: payload.role as any,
+    };
     next();
   } catch (error) {
     if (error instanceof AppError) {
@@ -37,7 +41,7 @@ export const authenticate = (
 };
 
 export const authorize = (...roles: Role[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction): void => {
+  return (req: AuthRequest, _res: Response, next: NextFunction): void => {
     if (!req.user) {
       return next(new AppError('Unauthorized', ErrorCodes.AUTH_004, 401));
     }
