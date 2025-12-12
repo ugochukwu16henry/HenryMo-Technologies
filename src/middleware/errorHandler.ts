@@ -3,17 +3,17 @@ import { AppError, sendError } from '../utils/errors';
 
 export const errorHandler = (
   err: Error | AppError,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void => {
   sendError(res, err);
 };
 
 export const notFoundHandler = (
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void => {
   res.status(404).json({
     error: 'Route not found',
