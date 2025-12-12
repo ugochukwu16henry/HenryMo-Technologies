@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import ProtectedRoute from '../../../components/ProtectedRoute';
 
 const PLATFORMS = [
@@ -34,10 +35,11 @@ export default function SchedulePost() {
     e.preventDefault();
 
     if (!content || !scheduledAt) {
-      return alert('Content and scheduled time are required');
+      return toast.error('Content and scheduled time are required');
     }
 
     setSaving(true);
+    const loadingToast = toast.loading('Scheduling post...');
 
     try {
       const token = localStorage.getItem('auth_token') || 
@@ -62,10 +64,10 @@ export default function SchedulePost() {
         throw new Error(error.error || 'Failed to schedule post');
       }
 
-      alert('Post scheduled successfully!');
+      toast.success('Post scheduled successfully!', { id: loadingToast });
       router.push('/admin/social');
     } catch (err) {
-      alert(err.message || 'Failed to schedule post');
+      toast.error(err.message || 'Failed to schedule post', { id: loadingToast });
     } finally {
       setSaving(false);
     }

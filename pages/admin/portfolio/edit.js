@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import ProtectedRoute from '../../../components/ProtectedRoute';
+import ImageUpload from '../../../components/ImageUpload';
 
 export default function PortfolioEdit() {
   const router = useRouter();
@@ -39,11 +41,11 @@ export default function PortfolioEdit() {
         setLiveUrl(item.liveUrl || '');
         setGithubUrl(item.githubUrl || '');
       } else {
-        alert('Portfolio item not found');
+        toast.error('Portfolio item not found');
         router.push('/admin/portfolio');
       }
     } catch (err) {
-      alert('Failed to load portfolio item');
+      toast.error('Failed to load portfolio item');
       console.error(err);
       router.push('/admin/portfolio');
     } finally {
@@ -66,10 +68,11 @@ export default function PortfolioEdit() {
     e.preventDefault();
 
     if (!title || !description) {
-      return alert('Title and description are required');
+      return toast.error('Title and description are required');
     }
 
     setSaving(true);
+    const loadingToast = toast.loading(isEditing ? 'Updating portfolio item...' : 'Adding portfolio item...');
 
     try {
       const token = localStorage.getItem('auth_token') || 
@@ -104,10 +107,10 @@ export default function PortfolioEdit() {
         throw new Error(error.error || `Failed to ${isEditing ? 'update' : 'create'} portfolio item`);
       }
 
-      alert(`Portfolio item ${isEditing ? 'updated' : 'created'} successfully!`);
+      toast.success(`Portfolio item ${isEditing ? 'updated' : 'created'} successfully!`, { id: loadingToast });
       router.push('/admin/portfolio');
     } catch (err) {
-      alert(err.message || `Failed to ${isEditing ? 'update' : 'create'} portfolio item`);
+      toast.error(err.message || `Failed to ${isEditing ? 'update' : 'create'} portfolio item`, { id: loadingToast });
     } finally {
       setSaving(false);
     }
@@ -187,17 +190,12 @@ export default function PortfolioEdit() {
               </div>
 
               <div>
-                <label className="block mb-2 font-medium">Image URL</label>
-                <input
-                  type="url"
+                <ImageUpload
+                  label="Project Image"
                   value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg"
-                  placeholder="https://example.com/image.jpg"
+                  onChange={setImage}
+                  required={false}
                 />
-                {image && (
-                  <img src={image} alt="Preview" className="mt-2 max-w-xs rounded" />
-                )}
               </div>
 
               <div>

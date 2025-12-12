@@ -90,3 +90,22 @@ model SocialAccount {
 
   @@unique([platform, userId])
 }
+
+model Inquiry {
+  id        Int         @id @default(autoincrement())
+  name      String
+  email     String
+  message   String
+  status    InquiryStatus @default(NEW)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@map("inquiries")
+}
+
+enum InquiryStatus {
+  NEW
+  READ
+  IN_PROGRESS
+  RESOLVED
+}

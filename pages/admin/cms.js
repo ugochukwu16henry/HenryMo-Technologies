@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import CmsEditor from '../../components/CmsEditor';
 import ProtectedRoute from '../../components/ProtectedRoute';
 
@@ -38,11 +39,11 @@ export default function CmsPage() {
           }
         }, 500);
       } else {
-        alert('Page not found');
+        toast.error('Page not found');
         router.push('/admin/pages');
       }
     } catch (err) {
-      alert('Failed to load page');
+      toast.error('Failed to load page');
       console.error(err);
       router.push('/admin/pages');
     } finally {
@@ -55,10 +56,11 @@ export default function CmsPage() {
     const content = editorRef.current?.getContent();
 
     if (!title || !slug || !content) {
-      return alert('All fields are required');
+      return toast.error('All fields are required');
     }
 
     setSaving(true);
+    const loadingToast = toast.loading(isEditing ? 'Updating page...' : 'Creating page...');
 
     try {
       const token = localStorage.getItem('auth_token') || 
@@ -84,10 +86,10 @@ export default function CmsPage() {
         throw new Error(error.error || `Failed to ${isEditing ? 'update' : 'create'} page`);
       }
 
-      alert(`Page ${isEditing ? 'updated' : 'created'} successfully!`);
+      toast.success(`Page ${isEditing ? 'updated' : 'created'} successfully!`, { id: loadingToast });
       router.push('/admin/pages');
     } catch (err) {
-      alert(err.message || `Failed to ${isEditing ? 'update' : 'create'} page`);
+      toast.error(err.message || `Failed to ${isEditing ? 'update' : 'create'} page`, { id: loadingToast });
     } finally {
       setSaving(false);
     }

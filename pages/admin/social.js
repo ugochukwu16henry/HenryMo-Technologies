@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import ProtectedRoute from '../../components/ProtectedRoute';
+import ConfirmModal from '../../components/ConfirmModal';
 
 const PLATFORMS = [
   { value: 'facebook', label: 'Facebook', color: '#1877F2' },
@@ -27,6 +29,7 @@ export default function SocialPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, post: null });
 
   useEffect(() => {
     fetchPosts();
@@ -49,11 +52,16 @@ export default function SocialPosts() {
     }
   };
 
-  const handleDelete = async (id, content) => {
+  const handleDeleteClick = (post) => {
+    setDeleteModal({ isOpen: true, post });
+  };
+
+  const handleDelete = async () => {
+    if (!deleteModal.post) return;
+
+    const { id, content } = deleteModal.post;
     const preview = content.substring(0, 50) + (content.length > 50 ? '...' : '');
-    if (!confirm(`Are you sure you want to delete this post?\n\n"${preview}"`)) {
-      return;
-    }
+    const loadingToast = toast.loading('Deleting post...');
 
     try {
       const token = localStorage.getItem('auth_token') || 
@@ -65,8 +73,10 @@ export default function SocialPosts() {
       });
 
       setPosts(posts.filter(post => post.id !== id));
+      toast.success('Post deleted successfully', { id: loadingToast });
+      setDeleteModal({ isOpen: false, post: null });
     } catch (err) {
-      alert('Failed to delete post: ' + (err.response?.data?.error || err.message));
+      toast.error(err.response?.data?.error || 'Failed to delete post', { id: loadingToast });
     }
   };
 
@@ -202,7 +212,7 @@ export default function SocialPosts() {
                             <div className="ml-4 flex items-center gap-2">
                               {post.status === 'SCHEDULED' && (
                                 <button
-                                  onClick={() => handleDelete(post.id, post.content)}
+                                  onClick={() => handleDeleteClick(post)}
                                   className="text-red-600 hover:text-red-800 font-medium text-sm"
                                 >
                                   Delete
@@ -225,6 +235,17 @@ export default function SocialPosts() {
             )}
           </div>
         </main>
+
+        <ConfirmModal
+          isOpen={deleteModal.isOpen}
+          onClose={() => setDeleteModal({ isOpen: false, post: null })}
+          onConfirm={handleDelete}
+          title="Delete Scheduled Post"
+          message={deleteModal.post ? `Are you sure you want to delete this post?\n\n"${deleteModal.post.content.substring(0, 50)}${deleteModal.post.content.length > 50 ? '...' : ''}"\n\nThis action cannot be undone.` : ''}
+          confirmText="Delete"
+          cancelText="Cancel"
+          danger={true}
+        />
       </div>
     </ProtectedRoute>
   );

@@ -1,13 +1,10 @@
 // pages/contact.js
 
 import { useState } from 'react';
-
 import Head from 'next/head';
-
+import toast from 'react-hot-toast';
 import Header from '../components/Header';
-
 import Footer from '../components/Footer';
-
 import Button from '../components/ui/Button';
 
 export default function Contact() {
@@ -17,35 +14,31 @@ export default function Contact() {
   const [status, setStatus] = useState('');
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
-
     setStatus('sending');
+    const loadingToast = toast.loading('Sending message...');
 
-    
+    try {
+      const res = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    const res = await fetch('/api/inquiries', {
+      const data = await res.json();
 
-      method: 'POST',
-
-      headers: { 'Content-Type': 'application/json' },
-
-      body: JSON.stringify(formData),
-
-    });
-
-    if (res.ok) {
-
-      setStatus('success');
-
-      setFormData({ name: '', email: '', message: '' });
-
-    } else {
-
+      if (res.ok) {
+        setStatus('success');
+        setFormData({ name: '', email: '', message: '' });
+        toast.success('Message sent successfully! We\'ll get back to you soon.', { id: loadingToast });
+      } else {
+        setStatus('error');
+        toast.error(data.error || 'Failed to send message. Please try again.', { id: loadingToast });
+      }
+    } catch (err) {
       setStatus('error');
-
+      toast.error('Failed to send message. Please try again.', { id: loadingToast });
     }
-
   };
 
   return (
@@ -139,10 +132,6 @@ export default function Contact() {
                 {status === 'sending' ? 'Sending...' : 'Send Message'}
 
               </Button>
-
-              {status === 'success' && <p className="text-green-600 mt-2">Message sent! We'll reply soon.</p>}
-
-              {status === 'error' && <p className="text-red-600 mt-2">Failed to send. Please try again.</p>}
 
             </form>
 

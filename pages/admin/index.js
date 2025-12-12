@@ -59,6 +59,9 @@ export default function AdminDashboard() {
                 <Link href="/admin/social" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
                   Social Posts
                 </Link>
+                <Link href="/admin/inquiries" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                  Inquiries
+                </Link>
                 <Link href="/admin/cms" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
                   Create Page
                 </Link>
@@ -79,7 +82,7 @@ export default function AdminDashboard() {
 
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Link href="/admin/pages" className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
               <div className="p-5">
                 <div className="flex items-center">
@@ -128,6 +131,24 @@ export default function AdminDashboard() {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Portfolio</dt>
                       <dd className="text-lg font-medium text-gray-900">Manage Projects</dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/admin/inquiries" className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+              <div className="p-5">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div className="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt className="text-sm font-medium text-gray-500 truncate">Inquiries</dt>
+                      <dd className="text-lg font-medium text-gray-900">Contact Forms</dd>
                     </dl>
                   </div>
                 </div>

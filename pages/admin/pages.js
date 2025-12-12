@@ -4,13 +4,16 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import ProtectedRoute from '../../components/ProtectedRoute';
+import ConfirmModal from '../../components/ConfirmModal';
 
 export default function PagesList() {
   const router = useRouter();
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, page: null });
 
   useEffect(() => {
     fetchPages();
@@ -28,10 +31,15 @@ export default function PagesList() {
     }
   };
 
-  const handleDelete = async (id, title) => {
-    if (!confirm(`Are you sure you want to delete "${title}"?`)) {
-      return;
-    }
+  const handleDeleteClick = (page) => {
+    setDeleteModal({ isOpen: true, page });
+  };
+
+  const handleDelete = async () => {
+    if (!deleteModal.page) return;
+
+    const { id, title } = deleteModal.page;
+    const loadingToast = toast.loading('Deleting page...');
 
     try {
       const token = localStorage.getItem('auth_token') || 
@@ -43,8 +51,10 @@ export default function PagesList() {
       });
 
       setPages(pages.filter(page => page.id !== id));
+      toast.success(`"${title}" deleted successfully`, { id: loadingToast });
+      setDeleteModal({ isOpen: false, page: null });
     } catch (err) {
-      alert('Failed to delete page: ' + (err.response?.data?.error || err.message));
+      toast.error(err.response?.data?.error || 'Failed to delete page', { id: loadingToast });
     }
   };
 
@@ -161,7 +171,7 @@ export default function PagesList() {
                               Edit
                             </Link>
                             <button
-                              onClick={() => handleDelete(page.id, page.title)}
+                              onClick={() => handleDeleteClick(page)}
                               className="text-red-600 hover:text-red-800 font-medium text-sm"
                             >
                               Delete
@@ -176,6 +186,17 @@ export default function PagesList() {
             )}
           </div>
         </main>
+
+        <ConfirmModal
+          isOpen={deleteModal.isOpen}
+          onClose={() => setDeleteModal({ isOpen: false, page: null })}
+          onConfirm={handleDelete}
+          title="Delete Page"
+          message={deleteModal.page ? `Are you sure you want to delete "${deleteModal.page.title}"? This action cannot be undone.` : ''}
+          confirmText="Delete"
+          cancelText="Cancel"
+          danger={true}
+        />
       </div>
     </ProtectedRoute>
   );

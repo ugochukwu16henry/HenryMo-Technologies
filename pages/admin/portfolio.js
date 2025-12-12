@@ -4,13 +4,16 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import ProtectedRoute from '../../components/ProtectedRoute';
+import ConfirmModal from '../../components/ConfirmModal';
 
 export default function PortfolioList() {
   const router = useRouter();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, item: null });
 
   useEffect(() => {
     fetchItems();
@@ -28,10 +31,15 @@ export default function PortfolioList() {
     }
   };
 
-  const handleDelete = async (id, title) => {
-    if (!confirm(`Are you sure you want to delete "${title}"?`)) {
-      return;
-    }
+  const handleDeleteClick = (item) => {
+    setDeleteModal({ isOpen: true, item });
+  };
+
+  const handleDelete = async () => {
+    if (!deleteModal.item) return;
+
+    const { id, title } = deleteModal.item;
+    const loadingToast = toast.loading('Deleting portfolio item...');
 
     try {
       const token = localStorage.getItem('auth_token') || 
@@ -43,8 +51,10 @@ export default function PortfolioList() {
       });
 
       setItems(items.filter(item => item.id !== id));
+      toast.success(`"${title}" deleted successfully`, { id: loadingToast });
+      setDeleteModal({ isOpen: false, item: null });
     } catch (err) {
-      alert('Failed to delete item: ' + (err.response?.data?.error || err.message));
+      toast.error(err.response?.data?.error || 'Failed to delete item', { id: loadingToast });
     }
   };
 
@@ -189,7 +199,7 @@ export default function PortfolioList() {
                           Edit
                         </Link>
                         <button
-                          onClick={() => handleDelete(item.id, item.title)}
+                          onClick={() => handleDeleteClick(item)}
                           className="flex-1 text-center text-red-600 hover:text-red-800 font-medium text-sm"
                         >
                           Delete
@@ -202,6 +212,17 @@ export default function PortfolioList() {
             )}
           </div>
         </main>
+
+        <ConfirmModal
+          isOpen={deleteModal.isOpen}
+          onClose={() => setDeleteModal({ isOpen: false, item: null })}
+          onConfirm={handleDelete}
+          title="Delete Portfolio Item"
+          message={deleteModal.item ? `Are you sure you want to delete "${deleteModal.item.title}"? This action cannot be undone.` : ''}
+          confirmText="Delete"
+          cancelText="Cancel"
+          danger={true}
+        />
       </div>
     </ProtectedRoute>
   );
