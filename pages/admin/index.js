@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import axios from 'axios';
 import ProtectedRoute from '../../components/ProtectedRoute';
 
@@ -44,8 +45,24 @@ export default function AdminDashboard() {
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold">HenryMo Admin Dashboard</h1>
+            <div className="flex items-center gap-6">
+              <Link href="/admin" className="text-xl font-semibold text-gray-900 hover:text-[#007BFF]">
+                HenryMo Admin
+              </Link>
+              <div className="flex gap-4">
+                <Link href="/admin/pages" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                  Pages
+                </Link>
+                <Link href="/admin/portfolio" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                  Portfolio
+                </Link>
+                <Link href="/admin/social" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                  Social Posts
+                </Link>
+                <Link href="/admin/cms" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                  Create Page
+                </Link>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-600">{user?.email || 'Loading...'}</span>
@@ -63,7 +80,7 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
+            <Link href="/admin/pages" className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -79,9 +96,9 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
+            <Link href="/admin/social" className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -97,25 +114,25 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
 
-            <div className="bg-white overflow-hidden shadow rounded-lg">
+            <Link href="/admin/portfolio" className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
               <div className="p-5">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Connected Accounts</dt>
-                      <dd className="text-lg font-medium text-gray-900">Social Media</dd>
+                      <dt className="text-sm font-medium text-gray-500 truncate">Portfolio</dt>
+                      <dd className="text-lg font-medium text-gray-900">Manage Projects</dd>
                     </dl>
                   </div>
                 </div>
               </div>
-            </div>
+            </Link>
           </div>
 
           <div className="bg-white shadow rounded-lg p-6">
