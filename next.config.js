@@ -27,6 +27,8 @@ const nextConfig = {
   },
   // Webpack optimization
   webpack: (config, { isServer }) => {
+    // Disable webpack cache to avoid Windows symlink issues
+    config.cache = false;
     // Optimize chunk splitting
     if (!isServer) {
       config.optimization.splitChunks = {
