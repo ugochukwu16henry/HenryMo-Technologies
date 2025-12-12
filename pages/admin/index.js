@@ -14,6 +14,8 @@ export default function AdminDashboard() {
     // Only run on client side
     if (typeof window !== 'undefined') {
       checkAuth();
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -68,7 +70,11 @@ export default function AdminDashboard() {
   }
 
   if (!user) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-500">Redirecting to login...</div>
+      </div>
+    );
   }
 
   return (

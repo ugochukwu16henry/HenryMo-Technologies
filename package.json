@@ -32,6 +32,7 @@
     "@tinymce/tinymce-react": "^6.3.0",
     "axios": "^1.5.0",
     "date-fns": "^4.1.0",
+    "express": "^5.2.1",
     "formidable": "^3.5.4",
     "jsonwebtoken": "^9.0.0",
     "next": "^14.2.31",
@@ -45,10 +46,12 @@
     "twilio": "^5.10.7"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "25.0.0",
     "@types/react": "19.2.7",
     "autoprefixer": "^10.4.22",
     "bcryptjs": "^2.4.3",
+    "eslint": "^9.39.1",
     "postcss": "^8.5.6",
     "prisma": "^5.10.0",
     "tailwindcss": "^3.4.19",

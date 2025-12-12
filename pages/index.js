@@ -1,6 +1,6 @@
 // pages/index.js
 
-import Head from 'next/head';
+import { NextSeo } from 'next-seo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ServiceCard from '../components/ServiceCard';
@@ -18,10 +18,15 @@ const services = [
 export default function Home() {
   return (
     <>
-      <Head>
-        <title>HenryMo Technologies — Where Ideas Become Powerful Digital Solutions</title>
-        <meta name="description" content="We build powerful digital experiences for the modern world." />
-      </Head>
+      <NextSeo
+        title="We Build Powerful Digital Experiences for the Modern World"
+        description="HenryMo Technologies creates modern websites, mobile apps, and custom software for global businesses. Affordable, scalable, and secure."
+        openGraph={{
+          title: 'HenryMo Technologies — Digital Solutions for a Smarter Future',
+          description: 'Full-stack development, cloud deployment, and social automation for startups and enterprises.',
+          images: [{ url: '/images/og-home.jpg' }],
+        }}
+      />
 
       <Header />
 
