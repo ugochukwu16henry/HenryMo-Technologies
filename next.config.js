@@ -1,11 +1,49 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Note: per-route `api` config (e.g. bodyParser limits) should be set
-  // in each API route file using `export const config = { api: { ... } }`.
+  // Optimize build performance
+  swcMinify: true,
+  // Reduce compilation time
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  // Optimize images
+  images: {
+    formats: ['image/avif', 'image/webp'],
+  },
   // Environment variables that should be available on the client
   env: {
     // Add any public env vars here if needed
+  },
+  // Webpack optimization
+  webpack: (config, { isServer }) => {
+    // Optimize chunk splitting
+    if (!isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          // Vendor chunk
+          vendor: {
+            name: 'vendor',
+            chunks: 'all',
+            test: /node_modules/,
+            priority: 20,
+          },
+          // Common chunk
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 10,
+            reuseExistingChunk: true,
+            enforce: true,
+          },
+        },
+      };
+    }
+    return config;
   },
 };
 

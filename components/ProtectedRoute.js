@@ -11,7 +11,12 @@ export default function ProtectedRoute({ children }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    checkAuth();
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      checkAuth();
+    } else {
+      setLoading(false);
+    }
   }, []);
 
   const checkAuth = async () => {

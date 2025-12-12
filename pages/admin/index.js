@@ -11,7 +11,10 @@ export default function AdminDashboard() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    checkAuth();
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      checkAuth();
+    }
   }, []);
 
   const checkAuth = async () => {
