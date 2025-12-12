@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Optimize build performance
-  swcMinify: true,
   // Skip type checking - Express routes in src/ are separate and have their own tsconfig
   typescript: {
     ignoreBuildErrors: false,
@@ -20,12 +18,10 @@ const nextConfig = {
   env: {
     // Add any public env vars here if needed
   },
-  // Skip running ESLint during production builds inside Next.js -
-  // this repository manages linting locally to avoid build-time failures
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  // Webpack optimization
+  // Turbopack configuration for Next.js 16+
+  // Note: Custom webpack config is kept as fallback if needed with --webpack flag
+  turbopack: {},
+  // Webpack optimization (used when running with --webpack flag)
   webpack: (config, { isServer }) => {
     // Disable webpack cache to avoid Windows symlink issues
     config.cache = false;
