@@ -5,8 +5,7 @@ import crypto from 'crypto';
 const ALGORITHM = 'aes-256-gcm';
 const KEY_LENGTH = 32; // 256 bits
 const IV_LENGTH = 16; // 128 bits
-const SALT_LENGTH = 64;
-const TAG_LENGTH = 16;
+// TAG_LENGTH is implicitly 16 bytes for GCM mode - defined by algorithm
 
 // Get encryption key from environment or generate one
 function getEncryptionKey(): Buffer {
@@ -70,7 +69,7 @@ export function decrypt(encryptedData: string): string {
 /**
  * AWS KMS encryption (if AWS credentials are available)
  */
-export async function encryptWithKMS(text: string, kmsKeyId?: string): Promise<string> {
+export async function encryptWithKMS(text: string, _kmsKeyId?: string): Promise<string> {
   // This requires AWS SDK - uncomment if using AWS KMS
   /*
   const AWS = require('aws-sdk');

@@ -17,7 +17,8 @@ const router = Router();
 // POST /api/auth/login
 router.post('/login', authRateLimiter, async (req, res, next) => {
   try {
-    const { email, password } = validate(loginSchema, req.body);
+    const validated = validate(loginSchema, req.body);
+    const { email, password } = validated;
 
     const user = await prisma.user.findUnique({
       where: { email },
@@ -30,7 +31,7 @@ router.post('/login', authRateLimiter, async (req, res, next) => {
     const payload = {
       userId: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role as string,
     };
 
     const accessToken = generateAccessToken(payload);
@@ -52,7 +53,8 @@ router.post('/login', authRateLimiter, async (req, res, next) => {
 // POST /api/auth/register
 router.post('/register', authRateLimiter, async (req, res, next) => {
   try {
-    const { email, password, name } = validate(registerSchema, req.body);
+    const validated = validate(registerSchema, req.body);
+    const { email, password, name } = validated;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -76,7 +78,7 @@ router.post('/register', authRateLimiter, async (req, res, next) => {
     const payload = {
       userId: user.id,
       email: user.email,
-      role: user.role,
+      role: user.role as string,
     };
 
     const accessToken = generateAccessToken(payload);
@@ -96,7 +98,7 @@ router.post('/register', authRateLimiter, async (req, res, next) => {
 });
 
 // POST /api/auth/logout
-router.post('/logout', authenticate, async (req: AuthRequest, res, next) => {
+router.post('/logout', authenticate, async (_req: AuthRequest, res, next) => {
   try {
     res.json({ message: 'Logged out successfully' });
   } catch (error) {

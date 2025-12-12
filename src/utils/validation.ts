@@ -1,9 +1,12 @@
 import { z } from 'zod';
 import { AppError, ErrorCodes } from './errors';
 
-export const validate = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
+export const validate = <T extends z.ZodTypeAny>(
+  schema: T,
+  data: unknown
+): z.infer<T> => {
   try {
-    return schema.parse(data);
+    return schema.parse(data) as z.infer<T>;
   } catch (error) {
     if (error instanceof z.ZodError) {
       const message = error.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join(', ');

@@ -26,7 +26,11 @@ export const authenticate = (
     const token = authHeader.substring(7);
     const payload = verifyAccessToken(token);
     
-    req.user = payload;
+    req.user = {
+      userId: payload.userId,
+      email: payload.email,
+      role: payload.role as any,
+    };
     next();
   } catch (error) {
     if (error instanceof AppError) {
