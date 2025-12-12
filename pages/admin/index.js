@@ -3,47 +3,32 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import ProtectedRoute from '../../components/ProtectedRoute';
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Only run on client side
+    // Fetch user info after ProtectedRoute verifies auth
     if (typeof window !== 'undefined') {
-      checkAuth();
-    } else {
-      setLoading(false);
+      fetchUser();
     }
   }, []);
 
-  const checkAuth = async () => {
+  const fetchUser = async () => {
     try {
       const token = localStorage.getItem('auth_token') || 
                     document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
 
-      if (!token) {
-        router.push('/admin/login');
-        return;
+      if (token) {
+        const response = await axios.get('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(response.data);
       }
-
-      const response = await axios.get('/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!['ADMIN', 'SUPERADMIN'].includes(response.data.role)) {
-        setError('Admin access required');
-        return;
-      }
-
-      setUser(response.data);
     } catch (err) {
-      console.error('Auth check failed:', err);
-      router.push('/admin/login');
-    } finally {
-      setLoading(false);
+      console.error('Failed to fetch user:', err);
     }
   };
 
@@ -53,32 +38,9 @@ export default function AdminDashboard() {
     router.push('/admin/login');
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-red-600">{error}</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500">Redirecting to login...</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
@@ -86,7 +48,7 @@ export default function AdminDashboard() {
               <h1 className="text-xl font-semibold">HenryMo Admin Dashboard</h1>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">{user.email}</span>
+              <span className="text-sm text-gray-600">{user?.email || 'Loading...'}</span>
               <button
                 onClick={handleLogout}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
@@ -157,7 +119,7 @@ export default function AdminDashboard() {
           </div>
 
           <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-lg font-semibold mb-4">Welcome, {user.name || user.email}!</h2>
+            <h2 className="text-lg font-semibold mb-4">Welcome, {user?.name || user?.email || 'Admin'}!</h2>
             <p className="text-gray-600">
               Use the navigation above to manage your content, schedule social media posts, and connect your social accounts.
             </p>
@@ -165,6 +127,7 @@ export default function AdminDashboard() {
         </div>
       </main>
     </div>
+    </ProtectedRoute>
   );
 }
 
