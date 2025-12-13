@@ -1,6 +1,7 @@
 // pages/api/social/connect/twitter.js
 
 import { PrismaClient } from '@prisma/client';
+import { verifyToken } from '../../../../lib/auth';
 
 const prisma = new PrismaClient();
 
@@ -10,6 +11,16 @@ const REDIRECT_URI = process.env.TWITTER_REDIRECT_URI;
 
 export default async function handler(req, res) {
   const { code, state } = req.query;
+
+  // Get authenticated user ID from token
+  let userId = 1; // Default fallback
+  const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
+  if (token) {
+    const payload = verifyToken(token);
+    if (payload) {
+      userId = payload.id;
+    }
+  }
 
   if (code) {
     try {
@@ -44,9 +55,9 @@ export default async function handler(req, res) {
       });
       const userInfo = await userRes.json();
 
-      // Store token (assume user ID = 1 for MVP)
+      // Store token
       await prisma.socialAccount.upsert({
-        where: { platform_userId: { platform: 'twitter', userId: 1 } },
+        where: { platform_userId: { platform: 'twitter', userId } },
         update: {
           accessToken,
           expiresAt: new Date(Date.now() + expiresIn * 1000),
@@ -54,14 +65,14 @@ export default async function handler(req, res) {
         },
         create: {
           platform: 'twitter',
-          userId: 1,
+          userId,
           accessToken,
           expiresAt: new Date(Date.now() + expiresIn * 1000),
           metadata: JSON.stringify(userInfo || {}),
         },
       });
 
-      return res.redirect('/admin?social=twitter-connected');
+      return res.redirect('/admin/social-accounts?social=twitter-connected');
     } catch (err) {
       console.error('Twitter OAuth error:', err);
       return res.status(500).json({ error: 'Twitter connection failed' });

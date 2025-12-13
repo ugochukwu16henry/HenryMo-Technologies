@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 
 const prisma = new PrismaClient();
 
@@ -29,9 +30,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Parse form data
+    // Parse form data - use OS temp directory (works on Windows, Mac, Linux)
+    const tempDir = os.tmpdir();
     const form = formidable({
-      uploadDir: '/tmp',
+      uploadDir: tempDir,
       keepExtensions: true,
       maxFileSize: 10 * 1024 * 1024, // 10MB
     });
@@ -122,7 +124,15 @@ export default async function handler(req, res) {
     return res.json({ url: fileUrl, fileName });
   } catch (err) {
     console.error('Upload error:', err);
-    return res.status(500).json({ error: 'File upload failed' });
+    console.error('Error details:', {
+      message: err.message,
+      stack: err.stack,
+      code: err.code
+    });
+    return res.status(500).json({ 
+      error: 'File upload failed',
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   } finally {
     await prisma.$disconnect();
   }

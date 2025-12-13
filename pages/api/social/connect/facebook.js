@@ -1,6 +1,7 @@
 // pages/api/social/connect/facebook.js
 
 import { PrismaClient } from '@prisma/client';
+import { verifyToken } from '../../../../lib/auth';
 
 const prisma = new PrismaClient();
 
@@ -10,6 +11,16 @@ const REDIRECT_URI = process.env.FACEBOOK_REDIRECT_URI;
 
 export default async function handler(req, res) {
   const { code } = req.query;
+
+  // Get authenticated user ID from token
+  let userId = 1; // Default fallback
+  const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
+  if (token) {
+    const payload = verifyToken(token);
+    if (payload) {
+      userId = payload.id;
+    }
+  }
 
   if (code) {
     try {
@@ -39,9 +50,9 @@ export default async function handler(req, res) {
       const pageData = await pageRes.json();
       const pageInfo = pageData.data?.[0];
 
-      // Store token (assume user ID = 1 for MVP)
+      // Store token
       await prisma.socialAccount.upsert({
-        where: { platform_userId: { platform: 'facebook', userId: 1 } },
+        where: { platform_userId: { platform: 'facebook', userId } },
         update: {
           accessToken,
           expiresAt: new Date(Date.now() + expiresIn * 1000),
@@ -49,14 +60,14 @@ export default async function handler(req, res) {
         },
         create: {
           platform: 'facebook',
-          userId: 1,
+          userId,
           accessToken,
           expiresAt: new Date(Date.now() + expiresIn * 1000),
           metadata: JSON.stringify(pageInfo || {}),
         },
       });
 
-      return res.redirect('/admin?social=facebook-connected');
+      return res.redirect('/admin/social-accounts?social=facebook-connected');
     } catch (err) {
       console.error('Facebook OAuth error:', err);
       return res.status(500).json({ error: 'Facebook connection failed' });

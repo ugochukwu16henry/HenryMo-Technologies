@@ -1,6 +1,7 @@
 // pages/api/social/connect/instagram.js
 
 import { PrismaClient } from '@prisma/client';
+import { verifyToken } from '../../../../lib/auth';
 
 const prisma = new PrismaClient();
 
@@ -10,6 +11,16 @@ const REDIRECT_URI = process.env.INSTAGRAM_REDIRECT_URI;
 
 export default async function handler(req, res) {
   const { code } = req.query;
+
+  // Get authenticated user ID from token
+  let userId = 1; // Default fallback
+  const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
+  if (token) {
+    const payload = verifyToken(token);
+    if (payload) {
+      userId = payload.id;
+    }
+  }
 
   if (code) {
     try {
@@ -38,9 +49,9 @@ export default async function handler(req, res) {
       const userRes = await fetch(`https://graph.instagram.com/me?fields=id,username&access_token=${accessToken}`);
       const userInfo = await userRes.json();
 
-      // Store token (assume user ID = 1 for MVP)
+      // Store token
       await prisma.socialAccount.upsert({
-        where: { platform_userId: { platform: 'instagram', userId: 1 } },
+        where: { platform_userId: { platform: 'instagram', userId } },
         update: {
           accessToken,
           expiresAt: new Date(Date.now() + expiresIn * 1000),
@@ -48,14 +59,14 @@ export default async function handler(req, res) {
         },
         create: {
           platform: 'instagram',
-          userId: 1,
+          userId,
           accessToken,
           expiresAt: new Date(Date.now() + expiresIn * 1000),
           metadata: JSON.stringify(userInfo || {}),
         },
       });
 
-      return res.redirect('/admin?social=instagram-connected');
+      return res.redirect('/admin/social-accounts?social=instagram-connected');
     } catch (err) {
       console.error('Instagram OAuth error:', err);
       return res.status(500).json({ error: 'Instagram connection failed' });

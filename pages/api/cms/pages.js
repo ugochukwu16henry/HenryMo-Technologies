@@ -31,15 +31,29 @@ function requireAdmin(req, res) {
 
 
 export default async function handler(req, res) {
-
   try {
-
     if (req.method === 'GET') {
+      // Support query parameter ?slug=xxx to get a single page
+      const { slug } = req.query;
 
-      const pages = await prisma.page.findMany();
+      if (slug) {
+        const page = await prisma.page.findUnique({
+          where: { slug: String(slug) }
+        });
+
+        if (!page) {
+          return res.status(404).json({ error: 'Page not found' });
+        }
+
+        return res.json(page);
+      }
+
+      // Otherwise return all pages
+      const pages = await prisma.page.findMany({
+        orderBy: { createdAt: 'desc' }
+      });
 
       return res.json(pages);
-
     }
 
 
