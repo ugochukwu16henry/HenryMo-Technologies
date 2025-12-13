@@ -59,6 +59,9 @@ export default function AdminDashboard() {
                 <Link href="/admin/social" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
                   Social Posts
                 </Link>
+                <Link href="/admin/social-accounts" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                  Social Accounts
+                </Link>
                 <Link href="/admin/inquiries" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
                   Inquiries
                 </Link>
