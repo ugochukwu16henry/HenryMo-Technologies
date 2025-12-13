@@ -9,17 +9,19 @@ import ProtectedRoute from '../../components/ProtectedRoute';
 export default function AdminDashboard() {
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const [unreadInquiriesCount, setUnreadInquiriesCount] = useState(0);
 
   useEffect(() => {
     // Fetch user info after ProtectedRoute verifies auth
     if (typeof window !== 'undefined') {
       fetchUser();
+      fetchUnreadInquiriesCount();
     }
   }, []);
 
   const fetchUser = async () => {
     try {
-      const token = localStorage.getItem('auth_token') || 
+      const token = localStorage.getItem('auth_token') ||
                     document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
 
       if (token) {
@@ -30,6 +32,22 @@ export default function AdminDashboard() {
       }
     } catch (err) {
       console.error('Failed to fetch user:', err);
+    }
+  };
+
+  const fetchUnreadInquiriesCount = async () => {
+    try {
+      const token = localStorage.getItem('auth_token') ||
+                    document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      if (token) {
+        const response = await axios.get('/api/inquiries', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const unreadCount = response.data.filter(inquiry => inquiry.status === 'NEW').length;
+        setUnreadInquiriesCount(unreadCount);
+      }
+    } catch (err) {
+      console.error('Failed to fetch unread inquiries count:', err);
     }
   };
 
@@ -53,8 +71,20 @@ export default function AdminDashboard() {
                 <Link href="/admin/pages" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
                   Pages
                 </Link>
+                <Link href="/admin/blog" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                  Blog
+                </Link>
+                <Link href="/admin/testimonials" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                  Testimonials
+                </Link>
                 <Link href="/admin/portfolio" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
                   Portfolio
+                </Link>
+                <Link href="/admin/analytics" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                  Analytics
+                </Link>
+                <Link href="/admin/settings" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                  Settings
                 </Link>
                 <Link href="/admin/social" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
                   Social Posts
@@ -62,8 +92,13 @@ export default function AdminDashboard() {
                 <Link href="/admin/social-accounts" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
                   Social Accounts
                 </Link>
-                <Link href="/admin/inquiries" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                <Link href="/admin/inquiries" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 relative">
                   Inquiries
+                  {unreadInquiriesCount > 0 && (
+                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                      {unreadInquiriesCount}
+                    </span>
+                  )}
                 </Link>
                 <Link href="/admin/cms" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
                   Create Page

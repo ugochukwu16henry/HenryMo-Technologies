@@ -1,5 +1,6 @@
 // pages/index.js
 
+import { useState, useEffect } from 'react';
 import { NextSeo } from 'next-seo';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -16,6 +17,32 @@ const services = [
 ];
 
 export default function Home() {
+  const [testimonials, setTestimonials] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/testimonials?featured=true')
+      .then(res => res.json())
+      .then(data => setTestimonials(data.slice(0, 3))) // Show max 3 featured
+      .catch(err => console.error('Failed to load testimonials:', err));
+  }, []);
+
+  const renderStars = (rating) => {
+    if (!rating) return null;
+    return (
+      <div className="flex text-yellow-400 mb-2">
+        {[...Array(5)].map((_, i) => (
+          <svg
+            key={i}
+            className={`w-4 h-4 ${i < rating ? 'fill-current' : 'text-gray-300'}`}
+            viewBox="0 0 20 20"
+          >
+            <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+          </svg>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <>
       <NextSeo
@@ -82,6 +109,45 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Testimonials */}
+        {testimonials.length > 0 && (
+          <section className="py-16 bg-gray-50">
+            <div className="container mx-auto px-4">
+              <h2 className="text-3xl font-bold text-center mb-12">What Our Clients Say</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {testimonials.map((testimonial) => (
+                  <div key={testimonial.id} className="bg-white p-6 rounded-lg shadow-md">
+                    {renderStars(testimonial.rating)}
+                    <p className="text-gray-700 mb-4 italic">"{testimonial.testimonial}"</p>
+                    <div className="flex items-center">
+                      {testimonial.photo ? (
+                        <img
+                          src={testimonial.photo}
+                          alt={testimonial.clientName}
+                          className="w-12 h-12 rounded-full object-cover mr-4"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold mr-4">
+                          {testimonial.clientName.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div>
+                        <div className="font-semibold text-gray-900">{testimonial.clientName}</div>
+                        {testimonial.position && (
+                          <div className="text-sm text-gray-600">{testimonial.position}</div>
+                        )}
+                        {testimonial.company && (
+                          <div className="text-sm text-gray-500">{testimonial.company}</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* CTA */}
         <section className="py-16 bg-[#111827] text-white text-center">
