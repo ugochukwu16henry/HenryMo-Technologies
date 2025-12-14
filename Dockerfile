@@ -3,7 +3,7 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files (including package-lock.json)
 COPY package*.json ./
 COPY prisma ./prisma/
 
@@ -24,11 +24,11 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files (including package-lock.json)
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Copy built files and Prisma schema
 COPY --from=builder /app/dist ./dist

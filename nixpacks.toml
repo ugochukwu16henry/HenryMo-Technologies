@@ -6,7 +6,7 @@ nixPkgs = ["nodejs-18_x", "postgresql"]
 
 [phases.install]
 cmds = [
-  "npm ci",
+  "if [ -f package-lock.json ]; then npm ci; else npm install; fi",
   "npx prisma generate"
 ]
 

@@ -1,0 +1,3 @@
+# Railway ignore file - ensure we use Nixpacks, not Docker
+# Railway will use nixpacks.toml for builds
+
