@@ -127,7 +127,15 @@ ALLOWED_ORIGINS=https://your-domain.railway.app,https://henrymo.tech
 
 ## Step 6: Configure Build Settings
 
-**Note:** Railway will automatically use `nixpacks.toml` for building. No manual configuration needed!
+**IMPORTANT:** Railway must use **Nixpacks**, not Docker!
+
+1. In Railway dashboard, click on your **Web Service**
+2. Go to **"Settings"** tab
+3. Scroll to **"Build"** section
+4. Ensure **"Builder"** is set to **"Nixpacks"** (NOT Dockerfile)
+5. If it shows "Dockerfile", change it to "Nixpacks"
+
+**Note:** The `railway.json` and `nixpacks.toml` files ensure Nixpacks is used, but verify in dashboard!
 
 Railway auto-detects Next.js, but verify these settings:
 
