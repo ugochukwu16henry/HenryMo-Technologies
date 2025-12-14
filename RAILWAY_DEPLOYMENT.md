@@ -14,19 +14,32 @@ Railway is perfect for deploying both your Next.js app and PostgreSQL database t
 
 ---
 
-## Step 2: Create New Project
+## Step 2: Commit package-lock.json (IMPORTANT!)
+
+Before deploying, make sure `package-lock.json` is committed to your repo:
+
+```bash
+git add package-lock.json
+git commit -m "Add package-lock.json for Railway deployment"
+git push
+```
+
+**Why?** Railway needs `package-lock.json` for reliable dependency installation.
+
+## Step 3: Create New Project
 
 1. From Railway dashboard, click **"New Project"**
 2. Select **"Deploy from GitHub repo"**
 3. Connect your GitHub account (if not already connected)
 4. Select your `HenryMo-Technologies` repository
-5. Click **"Deploy Now"**
+5. Railway will detect Next.js and use **Nixpacks** (configured via `nixpacks.toml`)
+6. Click **"Deploy Now"**
 
 Railway will automatically detect it's a Next.js app and start the deployment process.
 
 ---
 
-## Step 3: Add PostgreSQL Database
+## Step 4: Add PostgreSQL Database
 
 1. In your Railway project, click **"+ New"** button
 2. Select **"Database"** → **"Add PostgreSQL"**
@@ -37,13 +50,14 @@ Railway will automatically detect it's a Next.js app and start the deployment pr
 
 ---
 
-## Step 4: Configure Environment Variables
+## Step 5: Configure Environment Variables
 
 1. Click on your **Web Service** (the Next.js app)
 2. Go to **"Variables"** tab
 3. Add all required environment variables:
 
 ### Required Variables:
+
 ```env
 NODE_ENV=production
 PORT=3000
@@ -54,10 +68,12 @@ JWT_REFRESH_EXPIRES_IN=7d
 ```
 
 ### Database (Auto-added by Railway):
+
 - `DATABASE_URL` - Automatically set by Railway when you add PostgreSQL
 - **Note:** Railway's DATABASE_URL already includes SSL, so no need to add `?sslmode=require`
 
 ### Email Service (Optional but Recommended):
+
 ```env
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASSWORD=your-gmail-app-password
@@ -65,6 +81,7 @@ EMAIL_FROM=your-email@gmail.com
 ```
 
 ### Storage (Cloudflare R2 or AWS S3 - Optional):
+
 ```env
 CLOUDFLARE_R2_ACCESS_KEY_ID=your-access-key
 CLOUDFLARE_R2_SECRET_ACCESS_KEY=your-secret-key
@@ -73,6 +90,7 @@ CLOUDFLARE_R2_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
 ```
 
 Or for AWS S3:
+
 ```env
 AWS_ACCESS_KEY_ID=your-access-key
 AWS_SECRET_ACCESS_KEY=your-secret-key
@@ -81,6 +99,7 @@ AWS_REGION=us-east-1
 ```
 
 ### Social Media (Optional):
+
 ```env
 FACEBOOK_APP_ID=your-facebook-app-id
 FACEBOOK_APP_SECRET=your-facebook-app-secret
@@ -93,18 +112,22 @@ TWITTER_CLIENT_SECRET=your-twitter-client-secret
 ```
 
 ### CORS Origins:
+
 ```env
 ALLOWED_ORIGINS=https://your-domain.railway.app,https://henrymo.tech
 ```
 
-**Important:** 
+**Important:**
+
 - Generate strong secrets for JWT: `openssl rand -base64 32`
 - Update CORS origins with your actual domain
 - All variables are available to both your app and can be shared between services
 
 ---
 
-## Step 5: Configure Build Settings
+## Step 6: Configure Build Settings
+
+**Note:** Railway will automatically use `nixpacks.toml` for building. No manual configuration needed!
 
 Railway auto-detects Next.js, but verify these settings:
 
@@ -118,7 +141,7 @@ Railway auto-detects Next.js, but verify these settings:
 
 ---
 
-## Step 6: Generate Production Secrets
+## Step 7: Generate Production Secrets
 
 Before deployment, generate secure secrets:
 
@@ -132,7 +155,7 @@ Copy the generated secrets and add them to Railway environment variables.
 
 ---
 
-## Step 7: Deploy and Run Migrations
+## Step 8: Deploy and Run Migrations
 
 ### Option A: Automatic Migration (Recommended)
 
@@ -146,21 +169,25 @@ Railway will automatically run the build. After first deployment:
 ### Option B: Manual Migration via Railway CLI
 
 1. Install Railway CLI:
+
    ```bash
    npm install -g @railway/cli
    ```
 
 2. Login to Railway:
+
    ```bash
    railway login
    ```
 
 3. Link your project:
+
    ```bash
    railway link
    ```
 
 4. Run migrations:
+
    ```bash
    railway run npm run prisma:generate
    railway run npx prisma migrate deploy
@@ -173,7 +200,7 @@ Railway will automatically run the build. After first deployment:
 
 ---
 
-## Step 8: Set Up Custom Domain (Optional)
+## Step 9: Set Up Custom Domain (Optional)
 
 1. In Railway dashboard, click on your **Web Service**
 2. Go to **"Settings"** → **"Networking"**
@@ -186,7 +213,7 @@ Railway will automatically run the build. After first deployment:
 
 ---
 
-## Step 9: Configure Database Connection
+## Step 10: Configure Database Connection
 
 Railway's PostgreSQL automatically provides SSL. If you need to verify:
 
@@ -203,6 +230,7 @@ Railway's PostgreSQL automatically provides SSL. If you need to verify:
 ## Step 10: Update Build Scripts (if needed)
 
 Check `package.json` has these scripts:
+
 ```json
 {
   "scripts": {
@@ -239,6 +267,7 @@ After deployment:
 If you haven't seeded the database, create admin account:
 
 **Option 1: Via Railway CLI**
+
 ```bash
 railway run node -e "
 const { PrismaClient } = require('@prisma/client');
@@ -261,6 +290,7 @@ main().catch(console.error).finally(() => prisma.$disconnect());
 ```
 
 **Option 2: Use Prisma Studio**
+
 ```bash
 railway run npx prisma studio
 # This opens a browser interface to manage your database
@@ -273,6 +303,7 @@ railway run npx prisma studio
 ### Build Fails
 
 1. **Check Railway Logs:**
+
    - Go to your service → "Deployments" → "View Logs"
    - Look for error messages
 
@@ -284,6 +315,7 @@ railway run npx prisma studio
 ### Database Connection Errors
 
 1. **Verify DATABASE_URL:**
+
    - Check it's set in Railway Variables
    - Ensure PostgreSQL service is running (not paused)
 
@@ -295,6 +327,7 @@ railway run npx prisma studio
 ### App Crashes After Deployment
 
 1. **Check Application Logs:**
+
    - Railway dashboard → Service → "Deployments" → "View Logs"
 
 2. **Common Causes:**
@@ -314,6 +347,7 @@ railway run npx prisma studio
 ## Railway Pricing
 
 **Free Tier ($5 credit/month):**
+
 - ✅ $5 free credit
 - ✅ PostgreSQL database included
 - ✅ Automatic SSL certificates
@@ -321,6 +355,7 @@ railway run npx prisma studio
 - ✅ 500 hours of usage/month
 
 **Starter Plan ($5/month + usage):**
+
 - Everything in free tier
 - More resources
 - Better performance
@@ -369,6 +404,7 @@ Create a quick deployment checklist:
 ## Monitoring Your Deployment
 
 Railway provides:
+
 - **Real-time logs:** View application logs live
 - **Metrics:** CPU, memory, network usage
 - **Deployment history:** View all deployments
@@ -395,4 +431,3 @@ Railway provides:
 ---
 
 **You're all set!** Your Next.js app with PostgreSQL database will be running on Railway! 🚀
-
