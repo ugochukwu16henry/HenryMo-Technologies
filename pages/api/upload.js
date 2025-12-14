@@ -9,6 +9,14 @@ import os from 'os';
 
 const prisma = new PrismaClient();
 
+// Helper function to sanitize filenames
+function sanitizeFileName(originalFilename) {
+  return (originalFilename || 'upload')
+    .replace(/[^a-zA-Z0-9.-]/g, '-') // Replace special chars with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+}
+
 // Disable default body parser for file uploads
 export const config = {
   api: {
@@ -59,7 +67,8 @@ export default async function handler(req, res) {
       });
 
       const fileBuffer = fs.readFileSync(file.filepath);
-      const fileName = `${Date.now()}-${file.originalFilename || 'upload'}`;
+      const sanitizedName = sanitizeFileName(file.originalFilename);
+      const fileName = `${Date.now()}-${sanitizedName}`;
 
       await s3Client.send(
         new PutObjectCommand({
@@ -90,7 +99,8 @@ export default async function handler(req, res) {
       });
 
       const fileBuffer = fs.readFileSync(file.filepath);
-      const fileName = `${Date.now()}-${file.originalFilename || 'upload'}`;
+      const sanitizedName = sanitizeFileName(file.originalFilename);
+      const fileName = `${Date.now()}-${sanitizedName}`;
 
       await s3Client.send(
         new PutObjectCommand({
@@ -114,7 +124,8 @@ export default async function handler(req, res) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
 
-    const fileName = `${Date.now()}-${file.originalFilename || 'upload'}`;
+    const sanitizedName = sanitizeFileName(file.originalFilename);
+    const fileName = `${Date.now()}-${sanitizedName}`;
     const filePath = path.join(uploadDir, fileName);
 
     fs.copyFileSync(file.filepath, filePath);

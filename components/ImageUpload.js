@@ -1,13 +1,30 @@
 // components/ImageUpload.js
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
-export default function ImageUpload({ value, onChange, label = 'Image', required = false, accept = 'image/*' }) {
+export default function ImageUpload({ 
+  value, 
+  onChange, 
+  imageUrl, 
+  onImageChange,
+  label = 'Image', 
+  required = false, 
+  accept = 'image/*' 
+}) {
+  // Support both naming conventions: value/onChange and imageUrl/onImageChange
+  const actualValue = value || imageUrl || '';
+  const actualOnChange = onChange || onImageChange || (() => {});
+  
   const [uploading, setUploading] = useState(false);
-  const [preview, setPreview] = useState(value || '');
+  const [preview, setPreview] = useState(actualValue);
   const fileInputRef = useRef(null);
   const dropZoneRef = useRef(null);
+
+  // Sync preview with prop changes (e.g., when editing existing post)
+  useEffect(() => {
+    setPreview(actualValue);
+  }, [actualValue]);
 
   const handleFileSelect = async (file) => {
     if (!file) return;
@@ -54,7 +71,7 @@ export default function ImageUpload({ value, onChange, label = 'Image', required
       
       // Update preview and call onChange
       setPreview(data.url);
-      onChange(data.url);
+      actualOnChange(data.url);
       toast.success('Image uploaded successfully!', { id: loadingToast });
     } catch (err) {
       toast.error(err.message || 'Failed to upload image', { id: loadingToast });
@@ -86,7 +103,7 @@ export default function ImageUpload({ value, onChange, label = 'Image', required
 
   const handleRemove = () => {
     setPreview('');
-    onChange('');
+    actualOnChange('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -166,7 +183,7 @@ export default function ImageUpload({ value, onChange, label = 'Image', required
               value={preview}
               onChange={(e) => {
                 setPreview(e.target.value);
-                onChange(e.target.value);
+                actualOnChange(e.target.value);
               }}
               placeholder="Or enter image URL"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm"
