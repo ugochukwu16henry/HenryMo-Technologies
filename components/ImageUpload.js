@@ -26,7 +26,7 @@ export default function ImageUpload({
     setPreview(actualValue);
   }, [actualValue]);
 
-  const handleFileSelect = async (file) => {
+  const handleFileSelect = useCallback(async (file) => {
     if (!file) return;
 
     // Validate file type
@@ -82,7 +82,7 @@ export default function ImageUpload({
         fileInputRef.current.value = '';
       }
     }
-  };
+  }, [actualOnChange]);
 
   const handleFileInputChange = async (e) => {
     const file = e.target.files?.[0];
@@ -99,7 +99,7 @@ export default function ImageUpload({
     e.stopPropagation();
     const file = e.dataTransfer.files?.[0];
     await handleFileSelect(file);
-  }, []);
+  }, [handleFileSelect]);
 
   const handleRemove = () => {
     setPreview('');
@@ -166,18 +166,29 @@ export default function ImageUpload({
         id={`image-upload-${label.replace(/\s+/g, '-').toLowerCase()}`}
       />
       
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {uploading ? 'Uploading...' : preview ? 'Change Image' : 'Select Image'}
-        </button>
-        
-        {preview && (
-          <div className="flex-1">
+      {!preview && (
+        <div className="space-y-3">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="px-4 py-2 bg-[#007BFF] text-white rounded-lg text-sm font-medium hover:bg-[#0069d9] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {uploading ? 'Uploading...' : 'Choose File from Computer'}
+            </button>
+          </div>
+          
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">OR</span>
+            </div>
+          </div>
+          
+          <div>
             <input
               type="url"
               value={preview}
@@ -185,13 +196,26 @@ export default function ImageUpload({
                 setPreview(e.target.value);
                 actualOnChange(e.target.value);
               }}
-              placeholder="Or enter image URL"
+              placeholder="Paste image URL (alternative to uploading)"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm"
             />
-            <p className="mt-1 text-xs text-gray-500">You can also paste an image URL directly</p>
+            <p className="mt-1 text-xs text-gray-400 italic">Optional: Only use if you have an image URL. Prefer uploading above.</p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+      
+      {preview && (
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {uploading ? 'Uploading...' : 'Change Image'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
