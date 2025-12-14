@@ -9,17 +9,19 @@ import ProtectedRoute from '../../components/ProtectedRoute';
 export default function AdminDashboard() {
   const router = useRouter();
   const [user, setUser] = useState(null);
+  const [unreadInquiriesCount, setUnreadInquiriesCount] = useState(0);
 
   useEffect(() => {
     // Fetch user info after ProtectedRoute verifies auth
     if (typeof window !== 'undefined') {
       fetchUser();
+      fetchUnreadInquiriesCount();
     }
   }, []);
 
   const fetchUser = async () => {
     try {
-      const token = localStorage.getItem('auth_token') || 
+      const token = localStorage.getItem('auth_token') ||
                     document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
 
       if (token) {
@@ -30,6 +32,22 @@ export default function AdminDashboard() {
       }
     } catch (err) {
       console.error('Failed to fetch user:', err);
+    }
+  };
+
+  const fetchUnreadInquiriesCount = async () => {
+    try {
+      const token = localStorage.getItem('auth_token') ||
+                    document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      if (token) {
+        const response = await axios.get('/api/inquiries', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const unreadCount = response.data.filter(inquiry => inquiry.status === 'NEW').length;
+        setUnreadInquiriesCount(unreadCount);
+      }
+    } catch (err) {
+      console.error('Failed to fetch unread inquiries count:', err);
     }
   };
 
@@ -44,37 +62,60 @@ export default function AdminDashboard() {
       <div className="min-h-screen bg-gray-50">
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center gap-6">
-              <Link href="/admin" className="text-xl font-semibold text-gray-900 hover:text-[#007BFF]">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-4 flex-1 min-w-0">
+              <Link href="/admin" className="text-xl font-semibold text-gray-900 hover:text-[#007BFF] whitespace-nowrap">
                 HenryMo Admin
               </Link>
-              <div className="flex gap-4">
-                <Link href="/admin/pages" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+                <Link href="/admin/pages" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
                   Pages
                 </Link>
-                <Link href="/admin/portfolio" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                <Link href="/admin/homepage" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                  Homepage
+                </Link>
+                <Link href="/admin/about" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                  About
+                </Link>
+                <Link href="/admin/blog" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                  Blog
+                </Link>
+                <Link href="/admin/testimonials" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                  Testimonials
+                </Link>
+                <Link href="/admin/portfolio" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
                   Portfolio
                 </Link>
-                <Link href="/admin/social" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
-                  Social Posts
+                <Link href="/admin/analytics" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                  Analytics
                 </Link>
-                <Link href="/admin/social-accounts" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
-                  Social Accounts
+                <Link href="/admin/settings" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                  Settings
                 </Link>
-                <Link href="/admin/inquiries" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
+                <Link href="/admin/social" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                  Social
+                </Link>
+                <Link href="/admin/social-accounts" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                  Accounts
+                </Link>
+                <Link href="/admin/inquiries" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 relative whitespace-nowrap">
                   Inquiries
+                  {unreadInquiriesCount > 0 && (
+                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                      {unreadInquiriesCount}
+                    </span>
+                  )}
                 </Link>
-                <Link href="/admin/cms" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
-                  Create Page
+                <Link href="/admin/cms" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                  Create
                 </Link>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">{user?.email || 'Loading...'}</span>
+            <div className="flex items-center gap-4 flex-shrink-0 ml-4">
+              <span className="text-sm text-gray-600 hidden sm:inline whitespace-nowrap">{user?.email || 'Loading...'}</span>
               <button
                 onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm font-medium whitespace-nowrap"
               >
                 Logout
               </button>

@@ -1,15 +1,32 @@
 // components/ImageUpload.js
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
-export default function ImageUpload({ value, onChange, label = 'Image', required = false, accept = 'image/*' }) {
+export default function ImageUpload({ 
+  value, 
+  onChange, 
+  imageUrl, 
+  onImageChange,
+  label = 'Image', 
+  required = false, 
+  accept = 'image/*' 
+}) {
+  // Support both naming conventions: value/onChange and imageUrl/onImageChange
+  const actualValue = value || imageUrl || '';
+  const actualOnChange = onChange || onImageChange || (() => {});
+  
   const [uploading, setUploading] = useState(false);
-  const [preview, setPreview] = useState(value || '');
+  const [preview, setPreview] = useState(actualValue);
   const fileInputRef = useRef(null);
   const dropZoneRef = useRef(null);
 
-  const handleFileSelect = async (file) => {
+  // Sync preview with prop changes (e.g., when editing existing post)
+  useEffect(() => {
+    setPreview(actualValue);
+  }, [actualValue]);
+
+  const handleFileSelect = useCallback(async (file) => {
     if (!file) return;
 
     // Validate file type
@@ -54,7 +71,7 @@ export default function ImageUpload({ value, onChange, label = 'Image', required
       
       // Update preview and call onChange
       setPreview(data.url);
-      onChange(data.url);
+      actualOnChange(data.url);
       toast.success('Image uploaded successfully!', { id: loadingToast });
     } catch (err) {
       toast.error(err.message || 'Failed to upload image', { id: loadingToast });
@@ -65,7 +82,7 @@ export default function ImageUpload({ value, onChange, label = 'Image', required
         fileInputRef.current.value = '';
       }
     }
-  };
+  }, [actualOnChange]);
 
   const handleFileInputChange = async (e) => {
     const file = e.target.files?.[0];
@@ -82,11 +99,11 @@ export default function ImageUpload({ value, onChange, label = 'Image', required
     e.stopPropagation();
     const file = e.dataTransfer.files?.[0];
     await handleFileSelect(file);
-  }, []);
+  }, [handleFileSelect]);
 
   const handleRemove = () => {
     setPreview('');
-    onChange('');
+    actualOnChange('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -149,32 +166,56 @@ export default function ImageUpload({ value, onChange, label = 'Image', required
         id={`image-upload-${label.replace(/\s+/g, '-').toLowerCase()}`}
       />
       
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {uploading ? 'Uploading...' : preview ? 'Change Image' : 'Select Image'}
-        </button>
-        
-        {preview && (
-          <div className="flex-1">
+      {!preview && (
+        <div className="space-y-3">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="px-4 py-2 bg-[#007BFF] text-white rounded-lg text-sm font-medium hover:bg-[#0069d9] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {uploading ? 'Uploading...' : 'Choose File from Computer'}
+            </button>
+          </div>
+          
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">OR</span>
+            </div>
+          </div>
+          
+          <div>
             <input
               type="url"
               value={preview}
               onChange={(e) => {
                 setPreview(e.target.value);
-                onChange(e.target.value);
+                actualOnChange(e.target.value);
               }}
-              placeholder="Or enter image URL"
+              placeholder="Paste image URL (alternative to uploading)"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm"
             />
-            <p className="mt-1 text-xs text-gray-500">You can also paste an image URL directly</p>
+            <p className="mt-1 text-xs text-gray-400 italic">Optional: Only use if you have an image URL. Prefer uploading above.</p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+      
+      {preview && (
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {uploading ? 'Uploading...' : 'Change Image'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
