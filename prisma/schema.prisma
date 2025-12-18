@@ -152,3 +152,17 @@ model Setting {
 
   @@map("settings")
 }
+
+model PageView {
+  id        Int      @id @default(autoincrement())
+  page      String   // URL path visited
+  referrer  String?  // Where visitor came from
+  userAgent String?  // Browser/device info
+  visitorId String?  // Hashed identifier for unique visitors
+  country   String?  // Optional: from IP geolocation
+  createdAt DateTime @default(now())
+
+  @@index([page])
+  @@index([createdAt])
+  @@map("page_views")
+}

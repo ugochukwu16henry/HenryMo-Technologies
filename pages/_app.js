@@ -3,9 +3,14 @@
 import { DefaultSeo } from 'next-seo';
 import { Toaster } from 'react-hot-toast';
 import CookieConsent from '../components/CookieConsent';
+import GoogleAnalytics from '../components/GoogleAnalytics';
+import usePageTracking from '../hooks/usePageTracking';
 import '../styles/globals.css';
 
 export default function App({ Component, pageProps }) {
+  // Track page views (respects cookie consent)
+  usePageTracking();
+  
   return (
     <>
       {/* Global SEO defaults */}
@@ -61,6 +66,8 @@ export default function App({ Component, pageProps }) {
       />
       {/* Cookie Consent Banner */}
       <CookieConsent />
+      {/* Google Analytics */}
+      <GoogleAnalytics />
     </>
   );
 }
