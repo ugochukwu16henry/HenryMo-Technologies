@@ -2,6 +2,7 @@
 
 import { DefaultSeo } from 'next-seo';
 import { Toaster } from 'react-hot-toast';
+import CookieConsent from '../components/CookieConsent';
 import '../styles/globals.css';
 
 export default function App({ Component, pageProps }) {
@@ -58,6 +59,8 @@ export default function App({ Component, pageProps }) {
           },
         }}
       />
+      {/* Cookie Consent Banner */}
+      <CookieConsent />
     </>
   );
 }
