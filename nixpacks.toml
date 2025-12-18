@@ -2,7 +2,7 @@
 # This ensures Prisma is properly set up during build
 
 [phases.setup]
-nixPkgs = ["nodejs-18_x", "postgresql"]
+nixPkgs = ["nodejs_20", "postgresql"]
 
 [phases.install]
 cmds = [
