@@ -6,6 +6,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '../../components/ProtectedRoute';
+import AdminLayout from '../../components/AdminLayout';
 import ConfirmModal from '../../components/ConfirmModal';
 
 const PLATFORMS = [
@@ -148,43 +149,8 @@ export default function SocialAccounts() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center gap-6">
-                <Link href="/admin" className="text-xl font-semibold text-gray-900 hover:text-[#007BFF]">
-                  HenryMo Admin
-                </Link>
-                <div className="flex gap-4">
-                  <Link href="/admin/pages" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
-                    Pages
-                  </Link>
-                  <Link href="/admin/portfolio" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
-                    Portfolio
-                  </Link>
-                  <Link href="/admin/social" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
-                    Social Posts
-                  </Link>
-                  <Link href="/admin/social-accounts" className="px-3 py-2 rounded-md text-sm font-medium text-[#007BFF] bg-blue-50">
-                    Social Accounts
-                  </Link>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Link
-                  href="/admin"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
-                >
-                  Dashboard
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
+      <AdminLayout currentPage="social-accounts">
+        <div className="px-4 sm:px-0">
             <div className="mb-6">
               <h1 className="text-3xl font-bold text-gray-900">Social Media Accounts</h1>
               <p className="mt-2 text-gray-600">
@@ -308,8 +274,7 @@ export default function SocialAccounts() {
                 <p className="mt-1 text-sm text-gray-500">Connect your social media accounts to get started.</p>
               </div>
             )}
-          </div>
-        </main>
+        </div>
 
         <ConfirmModal
           isOpen={disconnectModal.isOpen}
@@ -321,7 +286,7 @@ export default function SocialAccounts() {
           cancelText="Cancel"
           danger={true}
         />
-      </div>
+      </AdminLayout>
     </ProtectedRoute>
   );
 }
