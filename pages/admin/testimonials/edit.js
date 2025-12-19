@@ -7,6 +7,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import ImageUpload from '../../../components/ImageUpload';
 import ProtectedRoute from '../../../components/ProtectedRoute';
+import AdminLayout from '../../../components/AdminLayout';
 
 export default function TestimonialEdit() {
   const router = useRouter();
@@ -115,46 +116,22 @@ export default function TestimonialEdit() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#007BFF]"></div>
-            <p className="mt-4 text-gray-600">Loading testimonial...</p>
+        <AdminLayout currentPage="testimonials">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#007BFF]"></div>
+              <p className="mt-4 text-gray-600">Loading testimonial...</p>
+            </div>
           </div>
-        </div>
+        </AdminLayout>
       </ProtectedRoute>
     );
   }
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center gap-6">
-                <Link href="/admin" className="text-xl font-semibold text-gray-900 hover:text-[#007BFF]">
-                  HenryMo Admin
-                </Link>
-                <div className="flex gap-4">
-                  <Link href="/admin/testimonials" className="px-3 py-2 rounded-md text-sm font-medium text-[#007BFF] bg-blue-50">
-                    Testimonials
-                  </Link>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Link
-                  href="/admin/testimonials"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
-                >
-                  ← Back to Testimonials
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        <main className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
+      <AdminLayout currentPage="testimonials">
+        <div className="px-4 sm:px-0">
             <h1 className="text-3xl font-bold mb-6">{isEditing ? 'Edit Testimonial' : 'Add New Testimonial'}</h1>
 
             <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
@@ -255,9 +232,8 @@ export default function TestimonialEdit() {
                 </Link>
               </div>
             </form>
-          </div>
-        </main>
-      </div>
+        </div>
+      </AdminLayout>
     </ProtectedRoute>
   );
 }

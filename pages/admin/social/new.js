@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '../../../components/ProtectedRoute';
+import AdminLayout from '../../../components/AdminLayout';
 
 const PLATFORMS = [
   { value: 'facebook', label: 'Facebook' },
@@ -75,40 +76,8 @@ export default function SchedulePost() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center gap-6">
-                <Link href="/admin" className="text-xl font-semibold text-gray-900 hover:text-[#007BFF]">
-                  HenryMo Admin
-                </Link>
-                <div className="flex gap-4">
-                  <Link href="/admin/pages" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
-                    Pages
-                  </Link>
-                  <Link href="/admin/portfolio" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
-                    Portfolio
-                  </Link>
-                  <Link href="/admin/social" className="px-3 py-2 rounded-md text-sm font-medium text-[#007BFF] bg-blue-50">
-                    Social Posts
-                  </Link>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Link
-                  href="/admin/social"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
-                >
-                  ← Back to Posts
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        <main className="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
+      <AdminLayout currentPage="social">
+        <div className="px-4 sm:px-0">
             <h1 className="text-3xl font-bold mb-6">Schedule Social Media Post</h1>
 
             <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
@@ -194,9 +163,8 @@ export default function SchedulePost() {
                 </Link>
               </div>
             </form>
-          </div>
-        </main>
-      </div>
+        </div>
+      </AdminLayout>
     </ProtectedRoute>
   );
 }
