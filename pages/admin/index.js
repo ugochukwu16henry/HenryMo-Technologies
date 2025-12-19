@@ -1,21 +1,17 @@
 // pages/admin/index.js
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
 import axios from 'axios';
 import ProtectedRoute from '../../components/ProtectedRoute';
+import AdminLayout from '../../components/AdminLayout';
 
 export default function AdminDashboard() {
-  const router = useRouter();
   const [user, setUser] = useState(null);
-  const [unreadInquiriesCount, setUnreadInquiriesCount] = useState(0);
 
   useEffect(() => {
-    // Fetch user info after ProtectedRoute verifies auth
     if (typeof window !== 'undefined') {
       fetchUser();
-      fetchUnreadInquiriesCount();
     }
   }, []);
 
@@ -35,97 +31,10 @@ export default function AdminDashboard() {
     }
   };
 
-  const fetchUnreadInquiriesCount = async () => {
-    try {
-      const token = localStorage.getItem('auth_token') ||
-                    document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-      if (token) {
-        const response = await axios.get('/api/inquiries', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const unreadCount = response.data.filter(inquiry => inquiry.status === 'NEW').length;
-        setUnreadInquiriesCount(unreadCount);
-      }
-    } catch (err) {
-      console.error('Failed to fetch unread inquiries count:', err);
-    }
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    router.push('/admin/login');
-  };
-
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-4 flex-1 min-w-0">
-              <Link href="/admin" className="text-xl font-semibold text-gray-900 hover:text-[#007BFF] whitespace-nowrap">
-                HenryMo Admin
-              </Link>
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-                <Link href="/admin/pages" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                  Pages
-                </Link>
-                <Link href="/admin/homepage" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                  Homepage
-                </Link>
-                <Link href="/admin/about" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                  About
-                </Link>
-                <Link href="/admin/blog" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                  Blog
-                </Link>
-                <Link href="/admin/testimonials" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                  Testimonials
-                </Link>
-                <Link href="/admin/portfolio" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                  Portfolio
-                </Link>
-                <Link href="/admin/analytics" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                  Analytics
-                </Link>
-                <Link href="/admin/settings" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                  Settings
-                </Link>
-                <Link href="/admin/social" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                  Social
-                </Link>
-                <Link href="/admin/social-accounts" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                  Accounts
-                </Link>
-                <Link href="/admin/inquiries" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 relative whitespace-nowrap">
-                  Inquiries
-                  {unreadInquiriesCount > 0 && (
-                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
-                      {unreadInquiriesCount}
-                    </span>
-                  )}
-                </Link>
-                <Link href="/admin/cms" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                  Create
-                </Link>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 flex-shrink-0 ml-4">
-              <span className="text-sm text-gray-600 hidden sm:inline whitespace-nowrap">{user?.email || 'Loading...'}</span>
-              <button
-                onClick={handleLogout}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm font-medium whitespace-nowrap"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+      <AdminLayout currentPage="">
+        <div className="px-4 sm:px-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Link href="/admin/pages" className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
               <div className="p-5">
@@ -207,8 +116,7 @@ export default function AdminDashboard() {
             </p>
           </div>
         </div>
-      </main>
-    </div>
+      </AdminLayout>
     </ProtectedRoute>
   );
 }
