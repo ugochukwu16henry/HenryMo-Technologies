@@ -182,8 +182,7 @@ export default function PortfolioList() {
                 ))}
               </div>
             )}
-          </div>
-        </main>
+        </div>
 
         <ConfirmModal
           isOpen={deleteModal.isOpen}
@@ -195,7 +194,7 @@ export default function PortfolioList() {
           cancelText="Cancel"
           danger={true}
         />
-      </div>
+      </AdminLayout>
     </ProtectedRoute>
   );
 }

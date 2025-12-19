@@ -354,14 +354,6 @@ export default function AboutManage() {
               </div>
             </div>
           </div>
-
-          <div className="mt-6 flex justify-end">
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="px-6 py-3 bg-[#007BFF] text-white rounded-lg font-medium hover:bg-[#0069d9] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {saving ? 'Saving...' : 'Save All Changes'}
         </AdminLayout>
       </ProtectedRoute>
     );
