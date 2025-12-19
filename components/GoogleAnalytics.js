@@ -1,7 +1,7 @@
 // components/GoogleAnalytics.js
 
 import Script from 'next/script';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 // Replace with your Google Analytics Measurement ID
@@ -29,10 +29,23 @@ export const event = ({ action, category, label, value }) => {
 
 export default function GoogleAnalytics() {
   const router = useRouter();
+  const [consent, setConsent] = useState(null);
 
   useEffect(() => {
-    // Check if user accepted cookies
-    const consent = localStorage.getItem('cookieConsent');
+    // Check cookie consent on mount and when it changes
+    const checkConsent = () => {
+      const cookieConsent = localStorage.getItem('cookieConsent');
+      setConsent(cookieConsent);
+    };
+    
+    checkConsent();
+    // Check periodically in case user changes consent
+    const interval = setInterval(checkConsent, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // Only track if consent is accepted
     if (consent !== 'accepted') return;
 
     const handleRouteChange = (url) => {
@@ -43,10 +56,10 @@ export default function GoogleAnalytics() {
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
-  }, [router.events]);
+  }, [router.events, consent]);
 
   // Don't load if no GA ID or cookies not accepted
-  if (!GA_MEASUREMENT_ID) return null;
+  if (!GA_MEASUREMENT_ID || consent !== 'accepted') return null;
 
   return (
     <>
@@ -77,4 +90,5 @@ export default function GoogleAnalytics() {
     </>
   );
 }
+
 

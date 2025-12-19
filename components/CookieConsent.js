@@ -22,20 +22,20 @@ export default function CookieConsent() {
     localStorage.setItem('cookieConsent', 'accepted');
     localStorage.setItem('cookieConsentDate', new Date().toISOString());
     setShowBanner(false);
-    // You can enable analytics/tracking here
-    enableAnalytics();
+    // Reload page to enable analytics
+    window.location.reload();
   };
 
   const declineCookies = () => {
     localStorage.setItem('cookieConsent', 'declined');
     localStorage.setItem('cookieConsentDate', new Date().toISOString());
     setShowBanner(false);
-  };
-
-  const enableAnalytics = () => {
-    // Add your analytics initialization here
-    // Example: Google Analytics, etc.
-    console.log('Analytics enabled');
+    // Clear any existing analytics data
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('consent', 'update', {
+        'analytics_storage': 'denied'
+      });
+    }
   };
 
   if (!showBanner) return null;

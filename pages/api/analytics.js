@@ -1,173 +1,125 @@
 // pages/api/analytics.js
 
-import { verifyToken } from '../../lib/auth';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-function requireAdmin(req, res) {
-  const token = req.cookies.token || req.headers.authorization?.replace('Bearer ', '');
-  const payload = verifyToken(token);
-
-  if (!payload || !['ADMIN', 'SUPERADMIN'].includes(payload.role)) {
-    res.status(403).json({ error: 'Admin access required.' });
-    return false;
-  }
-  return true;
-}
-
 export default async function handler(req, res) {
-  if (!requireAdmin(req, res)) return;
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   try {
-    // Get all data for analytics
-    // Handle cases where models might not exist in Prisma client yet
-    let pages = [];
-    let blogPosts = [];
-    let portfolioItems = [];
-    let inquiries = [];
-    let scheduledPosts = [];
-    let testimonials = [];
-    let users = [];
+    const days = parseInt(req.query.days) || 30;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    // Check if PageView model exists
+    let totalViews = 0;
+    let uniqueVisitors = 0;
+    let pagesTracked = 0;
+    let topPages = [];
+    let recentViews = [];
+    let averageViewsPerDay = 0;
 
     try {
-      pages = await prisma.page.findMany();
-    } catch (err) {
-      console.error('Error fetching pages:', err.message);
+      // Total page views
+      totalViews = await prisma.pageView.count({
+        where: {
+          createdAt: {
+            gte: startDate,
+          },
+        },
+      });
+
+      // Unique visitors (estimated by unique visitorIds)
+      const uniqueVisitorCount = await prisma.pageView.groupBy({
+        by: ['visitorId'],
+        where: {
+          createdAt: {
+            gte: startDate,
+          },
+          visitorId: {
+            not: null,
+          },
+        },
+      });
+      uniqueVisitors = uniqueVisitorCount.length;
+
+      // Top pages
+      const topPagesData = await prisma.pageView.groupBy({
+        by: ['page'],
+        where: {
+          createdAt: {
+            gte: startDate,
+          },
+        },
+        _count: {
+          page: true,
+        },
+        orderBy: {
+          _count: {
+            page: 'desc',
+          },
+        },
+        take: 10,
+      });
+
+      topPages = topPagesData.map((item) => ({
+        page: item.page,
+        count: item._count.page,
+      }));
+
+      // Count distinct pages
+      const distinctPages = await prisma.pageView.groupBy({
+        by: ['page'],
+        where: {
+          createdAt: {
+            gte: startDate,
+          },
+        },
+      });
+      pagesTracked = distinctPages.length;
+
+      // Recent views
+      recentViews = await prisma.pageView.findMany({
+        where: {
+          createdAt: {
+            gte: startDate,
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 20,
+        select: {
+          page: true,
+          referrer: true,
+          userAgent: true,
+          createdAt: true,
+        },
+      });
+
+      // Average views per day
+      averageViewsPerDay = totalViews / days;
+    } catch (dbError) {
+      // PageView model doesn't exist yet - that's okay
+      console.log('Analytics: PageView model not available yet');
     }
 
-    try {
-      blogPosts = await prisma.blogPost.findMany();
-    } catch (err) {
-      console.error('Error fetching blog posts:', err.message);
-    }
-
-    try {
-      portfolioItems = await prisma.portfolioItem.findMany();
-    } catch (err) {
-      console.error('Error fetching portfolio items:', err.message);
-    }
-
-    try {
-      inquiries = await prisma.inquiry.findMany();
-    } catch (err) {
-      console.error('Error fetching inquiries:', err.message);
-    }
-
-    try {
-      scheduledPosts = await prisma.scheduledPost.findMany();
-    } catch (err) {
-      console.error('Error fetching scheduled posts:', err.message);
-    }
-
-    try {
-      testimonials = await prisma.testimonial.findMany();
-    } catch (err) {
-      console.error('Error fetching testimonials:', err.message);
-    }
-
-    try {
-      users = await prisma.user.findMany();
-    } catch (err) {
-      console.error('Error fetching users:', err.message);
-    }
-
-    // Calculate statistics
-    const stats = {
-      overview: {
-        totalPages: pages.length,
-        totalBlogPosts: blogPosts.length,
-        publishedBlogPosts: blogPosts.filter(p => p.published).length,
-        draftBlogPosts: blogPosts.filter(p => !p.published).length,
-        totalPortfolioItems: portfolioItems.length,
-        totalTestimonials: testimonials.length,
-        featuredTestimonials: testimonials.filter(t => t.featured).length,
-        totalUsers: users.length,
-        adminUsers: users.filter(u => ['ADMIN', 'SUPERADMIN'].includes(u.role)).length,
-      },
-      inquiries: {
-        total: inquiries.length,
-        new: inquiries.filter(i => i.status === 'NEW').length,
-        read: inquiries.filter(i => i.status === 'READ').length,
-        inProgress: inquiries.filter(i => i.status === 'IN_PROGRESS').length,
-        resolved: inquiries.filter(i => i.status === 'RESOLVED').length,
-        recent: inquiries.slice(0, 5).map(i => ({
-          id: i.id,
-          name: i.name,
-          email: i.email,
-          status: i.status,
-          createdAt: i.createdAt,
-        })),
-      },
-      socialPosts: {
-        total: scheduledPosts.length,
-        scheduled: scheduledPosts.filter(p => p.status === 'SCHEDULED').length,
-        posted: scheduledPosts.filter(p => p.status === 'POSTED').length,
-        failed: scheduledPosts.filter(p => p.status === 'FAILED').length,
-        draft: scheduledPosts.filter(p => p.status === 'DRAFT').length,
-        byPlatform: scheduledPosts.reduce((acc, post) => {
-          acc[post.platform] = (acc[post.platform] || 0) + 1;
-          return acc;
-        }, {}),
-      },
-      content: {
-        blogCategories: blogPosts.reduce((acc, post) => {
-          if (post.category) {
-            acc[post.category] = (acc[post.category] || 0) + 1;
-          }
-          return acc;
-        }, {}),
-        recentBlogPosts: blogPosts.slice(0, 5).map(p => ({
-          id: p.id,
-          title: p.title,
-          published: p.published,
-          createdAt: p.createdAt,
-        })),
-        recentPages: pages.slice(0, 5).map(p => ({
-          id: p.id,
-          title: p.title,
-          slug: p.slug,
-          updatedAt: p.updatedAt,
-        })),
-      },
-      timeline: {
-        inquiriesLast30Days: getLast30DaysData(inquiries, 'createdAt'),
-        blogPostsLast30Days: getLast30DaysData(blogPosts.filter(p => p.published), 'publishedAt'),
-      },
-    };
-
-    return res.json(stats);
-  } catch (err) {
-    console.error('Analytics error:', err);
-    res.status(500).json({ error: 'Failed to fetch analytics.' });
+    return res.status(200).json({
+      totalViews,
+      uniqueVisitors,
+      pagesTracked,
+      topPages,
+      recentViews,
+      averageViewsPerDay,
+      dateRange: days,
+    });
+  } catch (error) {
+    console.error('Analytics API error:', error);
+    return res.status(500).json({ error: 'Failed to fetch analytics' });
   } finally {
     await prisma.$disconnect();
   }
 }
-
-function getLast30DaysData(items, dateField) {
-  const last30Days = [];
-  const today = new Date();
-  
-  for (let i = 29; i >= 0; i--) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    date.setHours(0, 0, 0, 0);
-    
-    const nextDate = new Date(date);
-    nextDate.setDate(nextDate.getDate() + 1);
-    
-    const count = items.filter(item => {
-      const itemDate = new Date(item[dateField] || item.createdAt);
-      return itemDate >= date && itemDate < nextDate;
-    }).length;
-    
-    last30Days.push({
-      date: date.toISOString().split('T')[0],
-      count,
-    });
-  }
-  
-  return last30Days;
-}
-
