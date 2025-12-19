@@ -1,34 +1,43 @@
 // pages/admin/settings.js
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import ProtectedRoute from '../../components/ProtectedRoute';
-import AdminLayout from '../../components/AdminLayout';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import axios from "axios";
+import toast from "react-hot-toast";
+import ProtectedRoute from "../../components/ProtectedRoute";
+import AdminLayout from "../../components/AdminLayout";
 
 const DEFAULT_SETTINGS = {
-  siteName: { value: 'HenryMo Technologies', category: 'general' },
-  siteTagline: { value: 'Where Ideas Become Powerful Digital Solutions', category: 'general' },
-  contactEmail: { value: 'ugochukwuhenry16@gmail.com', category: 'general' },
-  contactPhone: { value: '+234 901 571 8484', category: 'general' },
-  whatsappNumber: { value: '+2349015718484', category: 'general' },
-  facebookUrl: { value: '', category: 'social' },
-  twitterUrl: { value: '', category: 'social' },
-  linkedinUrl: { value: '', category: 'social' },
-  instagramUrl: { value: '', category: 'social' },
-  youtubeUrl: { value: '', category: 'social' },
-  githubUrl: { value: '', category: 'social' },
-  metaDescription: { value: 'We build powerful digital experiences for the modern world', category: 'seo' },
-  metaKeywords: { value: 'web development, mobile apps, custom software', category: 'seo' },
-  googleAnalyticsId: { value: '', category: 'seo' },
+  siteName: { value: "HenryMo Technologies", category: "general" },
+  siteTagline: {
+    value: "Where Ideas Become Powerful Digital Solutions",
+    category: "general",
+  },
+  contactEmail: { value: "ugochukwuhenry16@gmail.com", category: "general" },
+  contactPhone: { value: "+234 901 571 8484", category: "general" },
+  whatsappNumber: { value: "+2349015718484", category: "general" },
+  facebookUrl: { value: "", category: "social" },
+  twitterUrl: { value: "", category: "social" },
+  linkedinUrl: { value: "", category: "social" },
+  instagramUrl: { value: "", category: "social" },
+  youtubeUrl: { value: "", category: "social" },
+  githubUrl: { value: "", category: "social" },
+  metaDescription: {
+    value: "We build powerful digital experiences for the modern world",
+    category: "seo",
+  },
+  metaKeywords: {
+    value: "web development, mobile apps, custom software",
+    category: "seo",
+  },
+  googleAnalyticsId: { value: "", category: "seo" },
 };
 
 export default function Settings() {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchSettings();
@@ -36,10 +45,14 @@ export default function Settings() {
 
   const fetchSettings = async () => {
     try {
-      const token = localStorage.getItem('auth_token') ||
-                    document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      const token =
+        localStorage.getItem("auth_token") ||
+        document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("token="))
+          ?.split("=")[1];
 
-      const response = await axios.get('/api/settings', {
+      const response = await axios.get("/api/settings", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -52,7 +65,7 @@ export default function Settings() {
       }
       setSettings(mergedSettings);
     } catch (err) {
-      console.error('Failed to load settings:', err);
+      console.error("Failed to load settings:", err);
       // Continue with defaults if fetch fails
     } finally {
       setLoading(false);
@@ -60,7 +73,7 @@ export default function Settings() {
   };
 
   const handleChange = (key, value) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
       [key]: {
         ...prev[key],
@@ -71,22 +84,28 @@ export default function Settings() {
 
   const handleSave = async () => {
     setSaving(true);
-    const loadingToast = toast.loading('Saving settings...');
+    const loadingToast = toast.loading("Saving settings...");
 
     try {
-      const token = localStorage.getItem('auth_token') ||
-                    document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      const token =
+        localStorage.getItem("auth_token") ||
+        document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("token="))
+          ?.split("=")[1];
 
-      await axios.post('/api/settings', settings, {
+      await axios.post("/api/settings", settings, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
-      toast.success('Settings saved successfully!', { id: loadingToast });
+      toast.success("Settings saved successfully!", { id: loadingToast });
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to save settings', { id: loadingToast });
+      toast.error(err.response?.data?.error || "Failed to save settings", {
+        id: loadingToast,
+      });
     } finally {
       setSaving(false);
     }
@@ -107,10 +126,10 @@ export default function Settings() {
             <div key={key}>
               <label className="block mb-2 font-medium text-gray-700">
                 {key
-                  .replace(/([A-Z])/g, ' $1')
-                  .replace(/^./, str => str.toUpperCase())
-                  .replace(/Url/g, ' URL')
-                  .replace(/Id/g, ' ID')}
+                  .replace(/([A-Z])/g, " $1")
+                  .replace(/^./, (str) => str.toUpperCase())
+                  .replace(/Url/g, " URL")
+                  .replace(/Id/g, " ID")}
               </label>
               <input
                 type="text"
@@ -145,35 +164,36 @@ export default function Settings() {
     <ProtectedRoute>
       <AdminLayout currentPage="settings">
         <div className="px-4 sm:px-0">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-3xl font-bold text-gray-900">Site Settings</h1>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="bg-[#007BFF] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#0069d9] disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {saving ? 'Saving...' : 'Save Settings'}
-              </button>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">Site Settings</h1>
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="bg-[#007BFF] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#0069d9] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {saving ? "Saving..." : "Save Settings"}
+            </button>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+              {error}
             </div>
+          )}
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-                {error}
-              </div>
-            )}
+          {renderSection("General Settings", "general")}
+          {renderSection("Social Media Links", "social")}
+          {renderSection("SEO Settings", "seo")}
 
-            {renderSection('General Settings', 'general')}
-            {renderSection('Social Media Links', 'social')}
-            {renderSection('SEO Settings', 'seo')}
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-              <p className="text-sm text-blue-800">
-                <strong>Note:</strong> Changes to settings will take effect immediately. Some settings may require a page refresh to see changes.
-              </p>
-            </div>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> Changes to settings will take effect
+              immediately. Some settings may require a page refresh to see
+              changes.
+            </p>
+          </div>
         </div>
       </AdminLayout>
     </ProtectedRoute>
   );
 }
-
