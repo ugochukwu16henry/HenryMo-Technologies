@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Layout from '../../components/Layout';
+import Link from 'next/link';
+import ProtectedRoute from '../../components/ProtectedRoute';
 
 export default function AnalyticsDashboard() {
   const router = useRouter();
@@ -33,30 +34,78 @@ export default function AnalyticsDashboard() {
 
   if (loading) {
     return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">Loading analytics...</div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (error) {
-    return (
-      <Layout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-            Error: {error}
+      <ProtectedRoute>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#007BFF]"></div>
+            <p className="mt-4 text-gray-600">Loading analytics...</p>
           </div>
         </div>
-      </Layout>
+      </ProtectedRoute>
     );
   }
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex justify-between items-center">
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-50">
+        <nav className="bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center gap-4 flex-1 min-w-0">
+                <Link href="/admin" className="text-xl font-semibold text-gray-900 hover:text-[#007BFF] whitespace-nowrap">
+                  HenryMo Admin
+                </Link>
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+                  <Link href="/admin/pages" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                    Pages
+                  </Link>
+                  <Link href="/admin/homepage" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                    Homepage
+                  </Link>
+                  <Link href="/admin/about" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                    About
+                  </Link>
+                  <Link href="/admin/blog" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                    Blog
+                  </Link>
+                  <Link href="/admin/testimonials" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                    Testimonials
+                  </Link>
+                  <Link href="/admin/portfolio" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                    Portfolio
+                  </Link>
+                  <Link href="/admin/analytics" className="px-3 py-2 rounded-md text-sm font-medium text-[#007BFF] bg-blue-50 whitespace-nowrap">
+                    Analytics
+                  </Link>
+                  <Link href="/admin/settings" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                    Settings
+                  </Link>
+                  <Link href="/admin/inquiries" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900 whitespace-nowrap">
+                    Inquiries
+                  </Link>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 flex-shrink-0 ml-4">
+                <button
+                  onClick={() => router.push('/admin')}
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm font-medium whitespace-nowrap"
+                >
+                  Back to Dashboard
+                </button>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-6 sm:px-0">
+            {error && (
+              <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                Error: {error}
+              </div>
+            )}
+            
+            <div className="mb-6 flex justify-between items-center">
           <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
           <div className="flex gap-2">
             <select
@@ -231,7 +280,9 @@ export default function AnalyticsDashboard() {
             <li>View detailed analytics at <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer" className="underline">analytics.google.com</a></li>
           </ol>
         </div>
+          </div>
+        </main>
       </div>
-    </Layout>
+    </ProtectedRoute>
   );
 }
