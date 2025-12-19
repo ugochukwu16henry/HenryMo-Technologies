@@ -52,6 +52,7 @@ Or if you're deploying to Railway, the migration will run automatically when you
 #### For Local Development:
 
 Add to your `.env.local` file:
+
 ```
 NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 ```
@@ -100,6 +101,7 @@ The cookie consent banner appears when users first visit your site.
 ## 🔍 What Gets Tracked
 
 ### Built-in Analytics tracks:
+
 - Page URL visited
 - Referrer (where visitor came from)
 - User agent (browser/device info)
@@ -107,6 +109,7 @@ The cookie consent banner appears when users first visit your site.
 - Timestamp
 
 ### Google Analytics tracks:
+
 - All of the above, plus:
 - Geographic location (country, city)
 - Demographics (age, gender)
@@ -123,6 +126,7 @@ The cookie consent banner appears when users first visit your site.
 ### Built-in Analytics API:
 
 - **GET** `/api/analytics?days=30` - Get analytics data
+
   - Parameters:
     - `days` (optional): Number of days to look back (default: 30)
   - Returns: Statistics, top pages, recent views
@@ -136,11 +140,13 @@ The cookie consent banner appears when users first visit your site.
 ## 🚀 Testing
 
 1. **Test cookie consent:**
+
    - Visit your site
    - Accept cookies
    - Check that analytics start tracking
 
 2. **Test built-in analytics:**
+
    - Visit a few pages
    - Go to `/admin/analytics`
    - Verify your visits appear
@@ -158,11 +164,13 @@ The cookie consent banner appears when users first visit your site.
 ### No analytics data showing:
 
 1. **Check database migration:**
+
    ```bash
    npx prisma migrate status
    ```
 
 2. **Check cookie consent:**
+
    - Clear your browser cookies
    - Visit site again
    - Accept cookies when prompted
@@ -174,10 +182,12 @@ The cookie consent banner appears when users first visit your site.
 ### Google Analytics not working:
 
 1. **Verify Measurement ID:**
+
    - Should start with `G-`
    - No extra spaces or characters
 
 2. **Check browser console:**
+
    - Open DevTools (F12)
    - Look for errors in Console
    - Check Network tab for GA requests
@@ -218,4 +228,3 @@ The cookie consent banner appears when users first visit your site.
 5. ✅ Explore Google Analytics dashboard for detailed insights
 
 Happy tracking! 📊
-
