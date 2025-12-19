@@ -6,6 +6,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '../../components/ProtectedRoute';
+import AdminLayout from '../../components/AdminLayout';
 import ImageUpload from '../../components/ImageUpload';
 
 export default function AboutManage() {
@@ -141,62 +142,34 @@ export default function AboutManage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#007BFF]"></div>
-            <p className="mt-4 text-gray-600">Loading about page content...</p>
+        <AdminLayout currentPage="about">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#007BFF]"></div>
+              <p className="mt-4 text-gray-600">Loading about page content...</p>
+            </div>
           </div>
-        </div>
+        </AdminLayout>
       </ProtectedRoute>
     );
   }
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center gap-6">
-                <Link href="/admin" className="text-xl font-semibold text-gray-900 hover:text-[#007BFF]">
-                  HenryMo Admin
-                </Link>
-                <div className="flex gap-4">
-                  <Link href="/admin/pages" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
-                    Pages
-                  </Link>
-                  <Link href="/admin/homepage" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
-                    Homepage
-                  </Link>
-                  <Link href="/admin/about" className="px-3 py-2 rounded-md text-sm font-medium text-[#007BFF] bg-blue-50">
-                    About
-                  </Link>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="px-4 py-2 bg-[#007BFF] text-white rounded-lg text-sm font-medium hover:bg-[#0069d9] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {saving ? 'Saving...' : 'Save All Changes'}
-                </button>
-                <Link
-                  href="/admin"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
-                >
-                  ← Back to Dashboard
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <div className="mb-6">
+      <AdminLayout currentPage="about">
+        <div className="mb-6 flex justify-between items-center">
+          <div>
             <h1 className="text-3xl font-bold text-gray-900">Manage About Page Content</h1>
             <p className="mt-2 text-gray-600">Edit all sections of your about page including intro, vision, mission, team, and tech stack.</p>
           </div>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="px-6 py-3 bg-[#007BFF] text-white rounded-lg font-medium hover:bg-[#0069d9] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+          >
+            {saving ? 'Saving...' : 'Save All Changes'}
+          </button>
+        </div>
 
           <div className="space-y-6">
             {/* Intro Section */}
@@ -389,11 +362,8 @@ export default function AboutManage() {
               className="px-6 py-3 bg-[#007BFF] text-white rounded-lg font-medium hover:bg-[#0069d9] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? 'Saving...' : 'Save All Changes'}
-            </button>
-          </div>
-        </main>
-      </div>
-    </ProtectedRoute>
-  );
-}
+        </AdminLayout>
+      </ProtectedRoute>
+    );
+  }
 
