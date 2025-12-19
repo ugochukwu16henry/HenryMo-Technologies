@@ -6,6 +6,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '../../components/ProtectedRoute';
+import AdminLayout from '../../components/AdminLayout';
 import ConfirmModal from '../../components/ConfirmModal';
 
 export default function PortfolioList() {
@@ -68,37 +69,8 @@ export default function PortfolioList() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex items-center gap-6">
-                <Link href="/admin" className="text-xl font-semibold text-gray-900 hover:text-[#007BFF]">
-                  HenryMo Admin
-                </Link>
-                <div className="flex gap-4">
-                  <Link href="/admin/pages" className="px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:text-gray-900">
-                    Pages
-                  </Link>
-                  <Link href="/admin/portfolio" className="px-3 py-2 rounded-md text-sm font-medium text-[#007BFF] bg-blue-50">
-                    Portfolio
-                  </Link>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Link
-                  href="/admin"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
-                >
-                  Dashboard
-                </Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
+      <AdminLayout currentPage="portfolio">
+        <div className="px-4 sm:px-0">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl font-bold text-gray-900">Portfolio Items</h1>
               <Link
